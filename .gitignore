@@ -10,6 +10,9 @@
 *.userosscache
 *.sln.docstates
 
+# Twitter auth token
+Auth.txt
+
 # User-specific files (MonoDevelop/Xamarin Studio)
 *.userprefs
 

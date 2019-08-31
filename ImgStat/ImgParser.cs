@@ -5,6 +5,7 @@ namespace ImgStat
 {
     class ImgParser
     {
+        //Could probably delete this & make the program only 1-2 files.
         static int threads = 0;
         Bitmap bitmap = new Bitmap(@"C:\Users\rawr8\Pictures\Daddy.jpg");
         public ImgParser(string path)

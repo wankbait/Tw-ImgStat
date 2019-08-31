@@ -6,8 +6,7 @@ using System.Threading.Tasks;
 
 using System.Drawing;
 using System.Text.RegularExpressions;
-
-using OpenCL.Net;
+using SharpDX;
 
 namespace ImgStat
 {
@@ -15,6 +14,8 @@ namespace ImgStat
     {
         static void Main(string[] args)
         {
+            TweetGrabber.Init();
+
             string[] files = Directory.GetFiles(@"C:\Users\rawr8\Pictures\Test\", "*.jpg");
             Console.WriteLine("Hello World!");
             Parallel.ForEach(files, (current) =>{
@@ -87,5 +88,6 @@ namespace ImgStat
             Console.WriteLine("Finished. Press any key to exit.");
             Console.ReadKey();
         }
+
     }
 }
