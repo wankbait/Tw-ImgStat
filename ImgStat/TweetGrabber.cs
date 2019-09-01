@@ -12,6 +12,7 @@ namespace ImgStat
     {
         public static void Init()
         {
+            ExceptionHandler.SwallowWebExceptions = false;
             string authFile = $"{Environment.CurrentDirectory}\\Auth.txt";
             string cToken = "", cSecret = "", aToken = "", aSecret = "";
             try
@@ -52,15 +53,22 @@ namespace ImgStat
             }
             Auth.SetUserCredentials(cToken, cSecret, aToken, aSecret);
             
-            
         }
         public static void Fetch(int num)
         {
-            var searchParam = new SearchTweetsParameters("trump") {
-                MaximumNumberOfResults = num,
+            var stream = Tweetinvi.Stream.CreateFilteredStream();
+            stream.ClearCustomQueryParameters();
+            stream.AddCustomQueryParameter("art", "#digitalart");
+            stream.MatchingTweetReceived += (sender, args) => {
+                Console.WriteLine(args.Tweet);
+                Console.WriteLine(args.Tweet.FavoriteCount);
             };
-            var tweets = Search.SearchTweets("trump");
-            //Console.WriteLine(tweets.ToString());
+            stream.StartStreamMatchingAllConditionsAsync();
+        }
+
+        private static void Stream_TweetReceived(object sender, Tweetinvi.Events.TweetReceivedEventArgs e)
+        {
+            throw new NotImplementedException();
         }
     }
 }
