@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using Tweetinvi;
+using Tweetinvi.Parameters;
 
 
 namespace ImgStat
@@ -51,10 +52,15 @@ namespace ImgStat
             }
             Auth.SetUserCredentials(cToken, cSecret, aToken, aSecret);
             
+            
         }
         public static void Fetch(int num)
         {
-            Console.Write("Tell Koi to implement me.");   
+            var searchParam = new SearchTweetsParameters("trump") {
+                MaximumNumberOfResults = num,
+            };
+            var tweets = Search.SearchTweets("trump");
+            //Console.WriteLine(tweets.ToString());
         }
     }
 }

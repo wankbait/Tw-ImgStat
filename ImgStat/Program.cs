@@ -15,9 +15,10 @@ namespace ImgStat
         static void Main(string[] args)
         {
             TweetGrabber.Init();
-
+            TweetGrabber.Fetch(1);
             string[] files = Directory.GetFiles(@"C:\Users\rawr8\Pictures\Test\", "*.jpg");
             Console.WriteLine("Hello World!");
+            /*
             Parallel.ForEach(files, (current) =>{
                 Console.WriteLine($"FILE: {current} on thread: {Thread.CurrentThread.ManagedThreadId}");
                 
@@ -86,6 +87,7 @@ namespace ImgStat
             });
             ImgParser parser = new ImgParser();
             Console.WriteLine("Finished. Press any key to exit.");
+            */
             Console.ReadKey();
         }
 
