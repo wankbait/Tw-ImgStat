@@ -20,8 +20,14 @@ namespace ImgStat
             bitmap = new Bitmap(@"C:\Users\rawr8\Pictures\Daddy.jpg");
         }
 
-        public string GetStat()
+        public void GetStatGPU(string file)
         {
+
+        }
+
+        public void GetStat(string file)
+        {
+            Bitmap bitmap = new Bitmap(file);
 
             float TotalHue = 0.0f;
             float TotalSat = 0.0f;
@@ -35,16 +41,16 @@ namespace ImgStat
             float MinSat = 100f;
             float MinVal = 100f;
 
-            char[] c = { '-', '\\', '|', '/' };
-            float ind = 0;
+            char[] processChar = { '-', '\\', '|', '/' };
+            float processCharIndex = 0;
             for (int x = 0; x < bitmap.Width; x++)
             {
                 for (int y = 0; y < bitmap.Height; y++)
                 {
-                    var Pixel   = bitmap.GetPixel(x, y);
-                    float hue   = Pixel.GetHue();
+                    var Pixel = bitmap.GetPixel(x, y);
+                    float hue = Pixel.GetHue();
                     float value = Pixel.GetBrightness();
-                    float sat   = bitmap.GetPixel(x, y).GetSaturation();
+                    float sat = bitmap.GetPixel(x, y).GetSaturation();
 
 
                     TotalHue += hue;
@@ -68,22 +74,21 @@ namespace ImgStat
 
                     //Just so I could make the cool little spinny thing
                     //Also because I need to know if the program is working or not.
-                    Console.Write("\r" + c[(int)ind]);
-                    ind+=0.001f;
-                    if (ind >= c.Length)
+                    Console.Write("\r" + processChar[(int)processCharIndex]);
+                    processCharIndex += 0.001f;
+                    if (processCharIndex >= processChar.Length)
                     {
-                        ind = 0;
+                        processCharIndex = 0;
                     }
                 }
             }
             Console.Write("\n");
-            threads--;
-            return $"Totals (HSV): {TotalHue}, {TotalSat}, {TotalVal}; \n" +
-                $"Mean        : {TotalHue/(bitmap.Width * bitmap.Height)}, {TotalSat / (bitmap.Width * bitmap.Height)}, {TotalVal / (bitmap.Width * bitmap.Height)} \n" +
+            Console.Write($"Totals (HSV): {TotalHue}, {TotalSat}, {TotalVal}; \n" +
+                $"Mean        : {TotalHue / (bitmap.Width * bitmap.Height)}, {TotalSat / (bitmap.Width * bitmap.Height)}, {TotalVal / (bitmap.Width * bitmap.Height)} \n" +
                 $"Min         : {MinHue}, {MinSat}, {MinVal} \n" +
-                $"Max         : {MaxHue}, {MaxSat}, {MaxVal}";
+                $"Max         : {MaxHue}, {MaxSat}, {MaxVal} \n");
 
         }
-            
+
     }
 }
