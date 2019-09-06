@@ -15,14 +15,14 @@ namespace ImgStat
         static void Main(string[] args)
         {
             TweetGrabber.Init();
-            TweetGrabber.Fetch(1);
+            //TweetGrabber.Fetch(1);
             string[] files = Directory.GetFiles(@"C:\Users\rawr8\Pictures\Test\", "*.jpg");
             Console.WriteLine("Hello World!");
 
             Parallel.ForEach(files, (current) =>
             {
                 ImgParser parser = new ImgParser();
-                parser.GetStat(current);
+                parser.GetStatGPU(current);
             });
             Console.WriteLine("Finished. Press any key to exit.");
 
