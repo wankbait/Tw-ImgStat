@@ -56,6 +56,7 @@ namespace ImgStat
         }
         public static void Fetch(int num)
         {
+            Console.Write($"Running Command: Fetch {num} \n");
             var stream = Tweetinvi.Stream.CreateFilteredStream();
             stream.ClearCustomQueryParameters();
             stream.AddCustomQueryParameter("art", "#digitalart");
@@ -64,11 +65,6 @@ namespace ImgStat
                 Console.WriteLine(args.Tweet.FavoriteCount);
             };
             stream.StartStreamMatchingAllConditionsAsync();
-        }
-
-        private static void Stream_TweetReceived(object sender, Tweetinvi.Events.TweetReceivedEventArgs e)
-        {
-            throw new NotImplementedException();
         }
     }
 }
