@@ -1,48 +1,31 @@
 ﻿using System;
+using System.IO;
 using System.Drawing;
 using Cloo;
 namespace ImgStat
 {
     class ImgParser
     {
-        //Could probably delete this & make the program only 1-2 files.
-        static int threads = 0;
-        Bitmap bitmap = new Bitmap(@"C:\Users\rawr8\Pictures\Daddy.jpg");
-
+        static string Kernel = new StreamReader(System.Reflection.Assembly.GetExecutingAssembly().GetManifestResourceStream("ImgStat.Kernel.cl")).ReadToEnd();
+        
+        /*OPENCL BOILERPLATE */
         private static ComputePlatform platform = ComputePlatform.Platforms[0];
         private static ComputeContext ctx =
             new ComputeContext(ComputeDeviceTypes.Gpu,
                 new ComputeContextPropertyList(platform), null, IntPtr.Zero);
         private ComputeCommandQueue queue = new ComputeCommandQueue(ctx,
             ctx.Devices[0], ComputeCommandQueueFlags.None);
-        public ImgParser(string path)
-        {
-            if (path != null)
-            {
-                bitmap = new Bitmap(@"" + path);
-            }
-        }
         public ImgParser()
         {
-            bitmap = new Bitmap(@"C:\Users\rawr8\Pictures\Daddy.jpg");
         }
 
         public void GetStatGPU(string file)
         {
             Console.WriteLine($"Parsing {file} on platform: {platform.Name}");
             
-            string vecsum = @"
-                    __kernel void
-                        floatVectorSum(__global       float * v1,
-__global       float * v2)
-{
-// Vector element index
-int i = get_global_id(0);
-v1[i] = v1[i] + v2[i];
-}”;
-            ";
 
-            Console.ReadKey();
+
+            Console.Read();
         }
 
         public void GetStat(string file)
