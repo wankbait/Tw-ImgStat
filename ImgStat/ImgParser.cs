@@ -4,30 +4,63 @@ using System.Drawing;
 using Cloo;
 namespace ImgStat
 {
+    //Static struct to avoid recompiling kernels for each image
+    //**Would recompiling kernels actually be a good thing? TODO: Research lol
+    public struct clInfo {
+        static string clKernels = new StreamReader(System.Reflection.Assembly.GetExecutingAssembly().GetManifestResourceStream("ImgStat.Kernel.cl")).ReadToEnd();
+
+        /*OPENCL BOILERPLATE */
+        public static ComputePlatform platform = ComputePlatform.Platforms[0];
+
+        public static ComputeContext ctx =
+            new ComputeContext(ComputeDeviceTypes.Gpu, new ComputeContextPropertyList(platform), null, IntPtr.Zero);
+
+        public static ComputeCommandQueue queue = new ComputeCommandQueue(ctx,
+            ctx.Devices[0], ComputeCommandQueueFlags.None);
+
+        public static ComputeProgram program = new ComputeProgram(ctx, clKernels);
+
+        public static bool isInitialized = false;
+
+        public static void Init()
+        {
+            isInitialized = true;
+            program.Build(null, null, null, IntPtr.Zero);
+        }
+
+    }
     class ImgParser
     {
-        static string Kernel = new StreamReader(System.Reflection.Assembly.GetExecutingAssembly().GetManifestResourceStream("ImgStat.Kernel.cl")).ReadToEnd();
-        
-        /*OPENCL BOILERPLATE */
-        private static ComputePlatform platform = ComputePlatform.Platforms[0];
-        private static ComputeContext ctx =
-            new ComputeContext(ComputeDeviceTypes.Gpu,
-                new ComputeContextPropertyList(platform), null, IntPtr.Zero);
-        private ComputeCommandQueue queue = new ComputeCommandQueue(ctx,
-            ctx.Devices[0], ComputeCommandQueueFlags.None);
         public ImgParser()
         {
         }
 
         public void GetStatGPU(string file)
         {
-            Console.WriteLine($"Parsing {file} on platform: {platform.Name}");
-            
+            Console.WriteLine($"Parsing {file} on platform: {clInfo.platform.Name}");
+
+            ComputeKernel kernel = clInfo.program.CreateKernel("helloWorld");
+            // create a ten integer array and its length
+            int[] message = new int[] { 1, 2, 3, 4, 5 };
+            int messageSize = message.Length;
+
+            // allocate a memory buffer with the message (the int array)
+            ComputeBuffer<int> messageBuffer = new ComputeBuffer<int>(clInfo.ctx,
+            ComputeMemoryFlags.ReadOnly | ComputeMemoryFlags.UseHostPointer, message);
+
+            //ComputeImageFormat imgFormat = new ComputeImageFormat(ComputeImageChannelOrder.Rgba, ComputeImageChannelType.SignedInt32);
 
 
+            kernel.SetMemoryArgument(0, messageBuffer); // set the integer array
+            kernel.SetValueArgument(1, messageSize); // set the array size
+
+            // execute kernel
+            clInfo.queue.ExecuteTask(kernel, null);
+            clInfo.queue.Finish();
             Console.Read();
         }
 
+        /* Fallback CPU processing */
         public void GetStat(string file)
         {
             Bitmap bitmap = new Bitmap(file);

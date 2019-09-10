@@ -15,10 +15,12 @@ namespace ImgStat
         static void Main(string[] args)
         {
             TweetGrabber.Init();
-            //TweetGrabber.Fetch(1);
-            string[] files = Directory.GetFiles(@"C:\Users\rawr8\Pictures\Test\", "*.jpg");
+            clInfo.Init();
             Console.WriteLine("Hello World!");
 
+
+            //Test workload; swap this for some sort of tweet buffer data later.
+            string[] files = Directory.GetFiles(@"C:\Users\rawr8\Pictures\Test\", "*.jpg");
             Parallel.ForEach(files, (current) =>
             {
                 ImgParser parser = new ImgParser();
