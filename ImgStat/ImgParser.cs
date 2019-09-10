@@ -25,6 +25,7 @@ namespace ImgStat
         public static void Init()
         {
             isInitialized = true;
+            Console.WriteLine(ctx.Devices.ToString());
             program.Build(null, null, null, IntPtr.Zero);
         }
 
@@ -48,11 +49,13 @@ namespace ImgStat
             ComputeBuffer<int> messageBuffer = new ComputeBuffer<int>(clInfo.ctx,
             ComputeMemoryFlags.ReadOnly | ComputeMemoryFlags.UseHostPointer, message);
 
-            //ComputeImageFormat imgFormat = new ComputeImageFormat(ComputeImageChannelOrder.Rgba, ComputeImageChannelType.SignedInt32);
+            ComputeBuffer<ComputeImageFormat> computeBuffer = new ComputeBuffer<ComputeImageFormat>(clInfo.ctx, ComputeMemoryFlags.ReadOnly, 1L, new Bitmap(file).GetHbitmap());
 
 
             kernel.SetMemoryArgument(0, messageBuffer); // set the integer array
             kernel.SetValueArgument(1, messageSize); // set the array size
+
+            kernel.SetMemoryArgument(2, computeBuffer);
 
             // execute kernel
             clInfo.queue.ExecuteTask(kernel, null);

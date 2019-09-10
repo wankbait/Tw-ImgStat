@@ -15,7 +15,7 @@ namespace ImgStat
         static void Main(string[] args)
         {
             //Initialize static classes & structs.
-            TweetGrabber.Init();
+            //TweetGrabber.Init();
             clInfo.Init();
 
             Console.WriteLine("Hello World!");
