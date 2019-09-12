@@ -1,9 +1,9 @@
-﻿__kernel void helloWorld(__global read_only int* message, int messageSize, image2d_t image)
+﻿__kernel void satAvg(__read_only image2d_t src, __write_only int avg)
 {
-	int4 pix = read_imagei(image, (int2)(0,0) );
-	int lum = (0.2126*pix.x + 0.7152*pix.y + 0.0722*pix.z);
-	for (int i = 0; i< messageSize; i++){
-		printf("%d", message[i]);
-	}
+	const sampler_t samp = CLK_ADDRESS_CLAMP_TO_EDGE  |
+	CLK_NORMALIZED_COORDS_FALSE |
+	CLK_FILTER_NEAREST;
+	int2 coord = (int2)(get_global_id(0), get_global_id(1));
+	printf("OPENCL IS WORKING I THINK");
 
 };

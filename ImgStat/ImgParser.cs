@@ -2,10 +2,10 @@
 using System.IO;
 using System.Drawing;
 using Cloo;
+using OpenCL.Net;
 namespace ImgStat
 {
-    //Static struct to avoid recompiling kernels for each image
-    //**Would recompiling kernels actually be a good thing? TODO: Research lol
+    //
     public struct clInfo {
         static string clKernels = new StreamReader(System.Reflection.Assembly.GetExecutingAssembly().GetManifestResourceStream("ImgStat.Kernel.cl")).ReadToEnd();
 
