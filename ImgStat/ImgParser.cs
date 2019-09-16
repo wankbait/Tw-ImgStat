@@ -1,24 +1,91 @@
 ﻿using System;
+using System.Collections;
 using System.IO;
 using System.Drawing;
 using Cloo;
 using OpenCL.Net;
+using System.Collections.Generic;
+
 namespace ImgStat
 {
     //
     public struct clInfo {
-        static string clKernels = new StreamReader(System.Reflection.Assembly.GetExecutingAssembly().GetManifestResourceStream("ImgStat.Kernel.cl")).ReadToEnd();
-
+        static string KernelSrc = new StreamReader(System.Reflection.Assembly.GetExecutingAssembly().GetManifestResourceStream("ImgStat.Kernel.cl")).ReadToEnd();
+        
         /*OPENCL BOILERPLATE */
-        public static ComputePlatform platform = ComputePlatform.Platforms[0];
+        #region OCLNet
 
+        public static Context _context;
+        public static Device _device;
+        public static CommandQueue _queue;
+        public static OpenCL.Net.Program _program;
+
+        public static void CheckErr(ErrorCode err, string name)
+        {
+            if (err != ErrorCode.Success)
+            {
+                Console.WriteLine($"OPENCL ERROR: ({err.ToString()})");
+            }
+        }
+        public static void ContextNotify(string errINfo, byte[] data, IntPtr cb, IntPtr userData)
+        {
+            Console.WriteLine($"OpenCl Notification: {errINfo}");
+        }
+
+        public static void Setup()
+        {
+            ErrorCode err;
+            Platform[] platforms = Cl.GetPlatformIDs(out err);
+            List<Device> CLDevices = new List<Device>();
+
+            CheckErr(err, "Cl.GetPlatformIDs");
+
+            foreach(Platform p in platforms)
+            {
+                string platformName = Cl.GetPlatformInfo(p, PlatformInfo.Name, out err).ToString();
+
+                Console.WriteLine($"Platform: {platformName}");
+                CheckErr(err, "Cl.GetPlatformInfo");
+
+                //Limit platforms to GPU-based platforms
+                foreach (Device d in Cl.GetDeviceIDs(p, DeviceType.Gpu, out err))
+                {
+                    CheckErr(err, "Cl.GetDeviceIDs");
+                    Console.WriteLine("Device: " + d.ToString());
+                    CLDevices.Add(d);
+                }
+            }
+
+            if (CLDevices.Count <= 0)
+            {
+                Console.Error.WriteLine("No suitable OpenCL devices found.");
+                return;
+            }
+
+            _device = CLDevices[0];
+
+            if (Cl.GetDeviceInfo(_device, DeviceInfo.ImageSupport, out err).CastTo<Bool>() == Bool.False)
+            {
+                Console.Error.WriteLine($"Selected CL device {_device.ToString()} does not have image support.");
+                return;
+            }
+
+            _context = Cl.CreateContext(null, 1, new Device[] { _device }, ContextNotify, IntPtr.Zero, out err);
+            CheckErr(err, "Cl.CreateContext");
+        } 
+        #endregion
+
+
+        #region cloo
+        public static ComputePlatform platform = ComputePlatform.Platforms[0];
+        
         public static ComputeContext ctx =
             new ComputeContext(ComputeDeviceTypes.Gpu, new ComputeContextPropertyList(platform), null, IntPtr.Zero);
 
         public static ComputeCommandQueue queue = new ComputeCommandQueue(ctx,
             ctx.Devices[0], ComputeCommandQueueFlags.None);
 
-        public static ComputeProgram program = new ComputeProgram(ctx, clKernels);
+        public static ComputeProgram program = new ComputeProgram(ctx, KernelSrc);
 
         public static bool isInitialized = false;
 
@@ -28,7 +95,7 @@ namespace ImgStat
             Console.WriteLine(ctx.Devices.ToString());
             program.Build(null, null, null, IntPtr.Zero);
         }
-
+        #endregion
     }
     class ImgParser
     {
@@ -38,29 +105,33 @@ namespace ImgStat
 
         public void GetStatGPU(string file)
         {
-            Console.WriteLine($"Parsing {file} on platform: {clInfo.platform.Name}");
-
-            ComputeKernel kernel = clInfo.program.CreateKernel("helloWorld");
-            // create a ten integer array and its length
-            int[] message = new int[] { 1, 2, 3, 4, 5 };
-            int messageSize = message.Length;
-
-            // allocate a memory buffer with the message (the int array)
-            ComputeBuffer<int> messageBuffer = new ComputeBuffer<int>(clInfo.ctx,
-            ComputeMemoryFlags.ReadOnly | ComputeMemoryFlags.UseHostPointer, message);
-
-            ComputeBuffer<ComputeImageFormat> computeBuffer = new ComputeBuffer<ComputeImageFormat>(clInfo.ctx, ComputeMemoryFlags.ReadOnly, 1L, new Bitmap(file).GetHbitmap());
 
 
-            kernel.SetMemoryArgument(0, messageBuffer); // set the integer array
-            kernel.SetValueArgument(1, messageSize); // set the array size
+            #region Cloo
+            //Console.WriteLine($"Parsing {file} on platform: {clInfo.platform.Name}");
 
-            kernel.SetMemoryArgument(2, computeBuffer);
+            //ComputeKernel kernel = clInfo.program.CreateKernel("helloWorld");
+            //// create a ten integer array and its length
+            //int[] message = new int[] { 1, 2, 3, 4, 5 };
+            //int messageSize = message.Length;
 
-            // execute kernel
-            clInfo.queue.ExecuteTask(kernel, null);
-            clInfo.queue.Finish();
-            Console.Read();
+            //// allocate a memory buffer with the message (the int array)
+            //ComputeBuffer<int> messageBuffer = new ComputeBuffer<int>(clInfo.ctx,
+            //ComputeMemoryFlags.ReadOnly | ComputeMemoryFlags.UseHostPointer, message);
+
+            //ComputeBuffer<ComputeImageFormat> computeBuffer = new ComputeBuffer<ComputeImageFormat>(clInfo.ctx, ComputeMemoryFlags.ReadOnly, 1L, new Bitmap(file).GetHbitmap());
+
+
+            //kernel.SetMemoryArgument(0, messageBuffer); // set the integer array
+            //kernel.SetValueArgument(1, messageSize); // set the array size
+
+            //kernel.SetMemoryArgument(2, computeBuffer);
+
+            //// execute kernel
+            //clInfo.queue.ExecuteTask(kernel, null);
+            //clInfo.queue.Finish();
+            //Console.Read();
+            #endregion
         }
 
         /* Fallback CPU processing */
