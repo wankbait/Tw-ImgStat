@@ -3,10 +3,9 @@ using System.Linq;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
-
+using System.Reflection;
 using System.Drawing;
 using System.Text.RegularExpressions;
-using SharpDX;
 
 namespace ImgStat
 {
@@ -14,22 +13,29 @@ namespace ImgStat
     {
         static void Main(string[] args)
         {
+            Console.WriteLine("Hello World!");
+            
             //Initialize static classes & structs.
             //TweetGrabber.Init();
-            clInfo.Init();
+            clInfo.Setup();
 
-            Console.WriteLine("Hello World!");
-
+            Assembly assy = Assembly.GetExecutingAssembly();
 
             //Test workload; swap this for some sort of tweet buffer data later.
             string[] files = Directory.GetFiles(@"C:\Users\rawr8\Pictures\Test\", "*.jpg");
             Parallel.ForEach(files, (current) =>
             {
                 ImgParser parser = new ImgParser();
-                parser.GetStatGPU(current);
+                //parser.GetStatGPU(current);
             });
-            Console.WriteLine("Finished. Press any key to exit.");
 
+            //Write app logs to a folder because I was bored & wanted to figure out how to save logs.
+            string dir = Directory.CreateDirectory(assy.Location + @"\Logs\").FullName;
+            var logFile = File.CreateText(dir);
+            logFile.Write(Environment.CommandLine);
+
+
+            Console.WriteLine("Finished. Press any key to exit.");
             Console.ReadKey();
         }
 
