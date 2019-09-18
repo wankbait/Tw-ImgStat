@@ -31,7 +31,7 @@ namespace ImgStat
 
             //Write app logs to a folder because I was bored & wanted to figure out how to save logs.
             string dir = Directory.CreateDirectory(assy.Location + @"\Logs\").FullName;
-            var logFile = File.CreateText(dir);
+            var logFile = File.CreateText($"{dir}\\LOG_{System.DateTime.UtcNow}");
             logFile.Write(Environment.CommandLine);
 
 

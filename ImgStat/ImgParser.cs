@@ -2,15 +2,17 @@
 using System.Collections;
 using System.IO;
 using System.Drawing;
+using System.Drawing.Imaging;
 using Cloo;
 using OpenCL.Net;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 
 namespace ImgStat
 {
     //
     public struct clInfo {
-        static string KernelSrc = new StreamReader(System.Reflection.Assembly.GetExecutingAssembly().GetManifestResourceStream("ImgStat.Kernel.cl")).ReadToEnd();
+        public static string KernelSrc = new StreamReader(System.Reflection.Assembly.GetExecutingAssembly().GetManifestResourceStream("ImgStat.Kernel.cl")).ReadToEnd();
         
         /*OPENCL BOILERPLATE */
         #region OCLNet
@@ -24,7 +26,7 @@ namespace ImgStat
         {
             if (err != ErrorCode.Success)
             {
-                Console.WriteLine($"OPENCL ERROR: ({err.ToString()})");
+                Console.WriteLine($"OPENCL ERROR: {name}- {err.ToString()}");
             }
         }
         public static void ContextNotify(string errINfo, byte[] data, IntPtr cb, IntPtr userData)
@@ -106,6 +108,72 @@ namespace ImgStat
         public void GetStatGPU(string file)
         {
 
+            ErrorCode err;
+
+            using (OpenCL.Net.Program program = Cl.CreateProgramWithSource(clInfo._context, 1, new[] { clInfo.KernelSrc }, null, out err))
+            {
+                clInfo.CheckErr(err, "Cl.CreateProgramWithSource");
+
+                //Compile Kernels & check errors.
+                err = Cl.BuildProgram(program, 1, new[] { clInfo._device }, string.Empty, null, IntPtr.Zero);
+                clInfo.CheckErr(err, "Cl.BuildProgram");
+                if (Cl.GetProgramBuildInfo(program, clInfo._device, ProgramBuildInfo.Status, out err).CastTo<BuildStatus>() != BuildStatus.Success)
+                {
+                    clInfo.CheckErr(err, "Cl.GetProgramBuildInfo");
+                    Console.WriteLine("Cl.GetProgramBuildInfo != Success");
+                    Console.WriteLine(Cl.GetProgramBuildInfo(program, clInfo._device, ProgramBuildInfo.Log, out err));
+                    return;
+                }
+
+                //Specify the specific kernel for use
+                Kernel kernel = Cl.CreateKernel(program, "satAvg", out err);
+                clInfo.CheckErr(err, "Cl.CreateKernel");
+
+                int intPtrSize = 0;
+                intPtrSize = Marshal.SizeOf(typeof(IntPtr));
+
+                IMem image2DBuffer;
+                OpenCL.Net.ImageFormat imageFormat = new OpenCL.Net.ImageFormat(ChannelOrder.RGBA, ChannelType.Unsigned_Int8);
+                int imageWidth, imageHeight, imageBytesSize, imageStride;
+
+                using (FileStream imgStream = new FileStream(file, FileMode.Open))
+                {
+                    Image image = Image.FromStream(imgStream);
+
+                    if (image == null)
+                    {
+                        Console.Error.WriteLine($"failed to open file {file}");
+                        return;
+                    }
+                    imageWidth = image.Width;
+                    imageHeight = image.Height;
+
+                    //Create a bitmap from the file with the correct channel settings.
+                    Bitmap inputBitmap = new Bitmap(image);
+                    BitmapData bitmapDat = inputBitmap.LockBits(new Rectangle(0, 0, inputBitmap.Width, inputBitmap.Height),
+                        ImageLockMode.ReadOnly, PixelFormat.Format32bppArgb);
+
+                    imageStride = bitmapDat.Stride;
+                    imageBytesSize = imageStride * bitmapDat.Height;
+
+                    byte[] inputByteArray = new byte[imageBytesSize];
+                    Marshal.Copy(bitmapDat.Scan0, inputByteArray, 0, imageBytesSize);
+
+                    //Create & populate memory buffer for use in Kernel
+                    image2DBuffer = Cl.CreateImage2D(clInfo._context, 
+                        MemFlags.CopyHostPtr | MemFlags.ReadOnly, imageFormat, 
+                        (IntPtr)inputBitmap.Width, 
+                        (IntPtr)inputBitmap.Height, 
+                        (IntPtr)0, inputByteArray, out err);
+
+                    clInfo.CheckErr(err, "Cl.CreateImage2D output");
+                }
+
+                err = Cl.SetKernelArg(kernel, 0, image2DBuffer);
+                //TODO: Create buffer for int
+                //err |= Cl.SetKernelArg(kernel, 1, Cl.CreateBuffer())
+
+            }
 
             #region Cloo
             //Console.WriteLine($"Parsing {file} on platform: {clInfo.platform.Name}");
