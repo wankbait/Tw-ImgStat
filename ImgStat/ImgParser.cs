@@ -178,6 +178,33 @@ namespace ImgStat
                 //TODO: Figure out how to pass a float to the kernel
                 //err |= Cl.SetKernelArg(kernel, 1, (IntPtr)intPtrSize, sat );
                 clInfo.CheckErr(err, "Cl.SetKernelArg");
+
+                //Create & queue commands
+                CommandQueue cmdQueue = Cl.CreateCommandQueue(clInfo._context, clInfo._device, CommandQueueProperties.None, out err);
+                clInfo.CheckErr(err, "Cl.CreateCommandQueue");
+
+                Event @event;
+
+                //Transfer image data to kernel buffers
+                IntPtr[] originPtr = new IntPtr[] { (IntPtr)0, (IntPtr)0, (IntPtr)0 };
+                IntPtr[] regionPtr = new IntPtr[] { (IntPtr)imageWidth, (IntPtr)imageHeight, (IntPtr)1 };
+                IntPtr[] workGroupPtr = new IntPtr[] { (IntPtr)imageWidth, (IntPtr)imageHeight, (IntPtr)1 };
+
+                err = Cl.EnqueueReadImage(cmdQueue, image2DBuffer, Bool.True, originPtr, regionPtr, (IntPtr)0, (IntPtr)0, null, 0, null, out @event);
+                clInfo.CheckErr(err, "Cl.EnqueueReadImage");
+
+                //Execute the kerenl
+                err = Cl.EnqueueNDRangeKernel(cmdQueue, kernel, 2, null, workGroupPtr, null, 0, null, out @event);
+                clInfo.CheckErr(err, "Cl.EnqueueNDRangeKernel");
+
+                err = Cl.Finish(cmdQueue);
+                clInfo.CheckErr(err, "Cl.Finish");
+
+                Cl.ReleaseKernel(kernel);
+                Cl.ReleaseCommandQueue(cmdQueue);
+
+                Cl.ReleaseMemObject(image2DBuffer);
+
             }
 
             #region Cloo
