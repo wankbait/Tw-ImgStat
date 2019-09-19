@@ -168,11 +168,16 @@ namespace ImgStat
 
                     clInfo.CheckErr(err, "Cl.CreateImage2D output");
                 }
+                //Create an output buffer for the average saturation of the image.
+                float saturation = 0;
+                IMem sat = Cl.CreateBuffer(clInfo._context, MemFlags.CopyHostPtr | MemFlags.WriteOnly, (IntPtr)intPtrSize, (object)saturation, out err);
+                clInfo.CheckErr(err, "Cl.CreateBuffer saturation");
 
-                err = Cl.SetKernelArg(kernel, 0, image2DBuffer);
-                //TODO: Create buffer for int
-                //err |= Cl.SetKernelArg(kernel, 1, Cl.CreateBuffer())
-
+                //Passing buffers to the CL kernel
+                err = Cl.SetKernelArg(kernel, 0, (IntPtr)intPtrSize, image2DBuffer);
+                //TODO: Figure out how to pass a float to the kernel
+                //err |= Cl.SetKernelArg(kernel, 1, (IntPtr)intPtrSize, sat );
+                clInfo.CheckErr(err, "Cl.SetKernelArg");
             }
 
             #region Cloo

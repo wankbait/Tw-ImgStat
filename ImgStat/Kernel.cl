@@ -1,4 +1,4 @@
-﻿__kernel void satAvg(__read_only image2d_t src, __write_only int avg)
+﻿__kernel void satAvg(__read_only image2d_t src)
 {
 	const sampler_t samp = CLK_ADDRESS_CLAMP_TO_EDGE  |
 	CLK_NORMALIZED_COORDS_FALSE |
