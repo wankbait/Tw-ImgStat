@@ -20,19 +20,24 @@ namespace ImgStat
             clInfo.Setup();
 
             Assembly assy = Assembly.GetExecutingAssembly();
-
+            ImgParser test = new ImgParser();
+            test.GetStatGPU(@"C:\Users\rawr8\Pictures\Test\4_68.jpg");
             //Test workload; swap this for some sort of tweet buffer data later.
-            string[] files = Directory.GetFiles(@"C:\Users\rawr8\Pictures\Test\", "*.jpg");
-            Parallel.ForEach(files, (current) =>
-            {
-                ImgParser parser = new ImgParser();
-                //parser.GetStatGPU(current);
-            });
+            //string[] files = Directory.GetFiles(@"C:\Users\rawr8\Pictures\Test\", "*.jpg");
+            //Parallel.ForEach(files, (current) =>
+            //{
+            //    ImgParser parser = new ImgParser();
+            //    //parser.GetStatGPU(current);
+            //});
 
             //Write app logs to a folder because I was bored & wanted to figure out how to save logs.
-            string dir = Directory.CreateDirectory(assy.Location + @"\Logs\").FullName;
-            var logFile = File.CreateText($"{dir}\\LOG_{System.DateTime.UtcNow}");
-            logFile.Write(Environment.CommandLine);
+            //string logpath = assy.Location + @"\Logs\";
+            //if (!Directory.Exists(logpath))
+            //{
+            //    string dir = Directory.CreateDirectory(logpath).FullName;
+            //}
+            //var logFile = File.CreateText($"{logpath}\\LOG_{System.DateTime.UtcNow}");
+            //logFile.Write(Environment.CommandLine);
 
 
             Console.WriteLine("Finished. Press any key to exit.");
