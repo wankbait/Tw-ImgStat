@@ -4,6 +4,5 @@
 	CLK_NORMALIZED_COORDS_FALSE |
 	CLK_FILTER_NEAREST;
 	int2 coord = (int2)(get_global_id(0), get_global_id(1));
-	printf("OPENCL IS WORKING I THINK");
 
 };

@@ -1,11 +1,8 @@
 ﻿using System;
-using System.Linq;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Reflection;
-using System.Drawing;
-using System.Text.RegularExpressions;
 
 namespace ImgStat
 {
@@ -14,22 +11,29 @@ namespace ImgStat
         static void Main(string[] args)
         {
             Console.WriteLine("Hello World!");
-            
-            //Initialize static classes & structs.
-            //TweetGrabber.Init();
-            clInfo.Setup();
-
-            Assembly assy = Assembly.GetExecutingAssembly();
-            ImgParser test = new ImgParser();
-            test.GetStatGPU(@"C:\Users\rawr8\Pictures\Test\4_68.jpg");
-            //Test workload; swap this for some sort of tweet buffer data later.
-            //string[] files = Directory.GetFiles(@"C:\Users\rawr8\Pictures\Test\", "*.jpg");
-            //Parallel.ForEach(files, (current) =>
-            //{
-            //    ImgParser parser = new ImgParser();
-            //    //parser.GetStatGPU(current);
-            //});
-
+            TweetGrabber.Init();
+            while (true)
+            {
+                Console.WriteLine("Press (1) to grab tweets, (2) to process tweets. Press anything else to exit.");
+                ConsoleKeyInfo keyInfo = Console.ReadKey();
+                if(keyInfo.KeyChar == '1')
+                {
+                    Console.WriteLine("\nEnter max tweets: ");
+                    int max = int.Parse(Console.ReadLine());
+                    TweetGrabber.Fetch(max);
+                }
+                else if(keyInfo.KeyChar == '2')
+                {
+                    clInfo.Setup();
+                    ImgParser parser = new ImgParser();
+                    //TODO: Do something.
+                    break;
+                }
+                else
+                {
+                    break;
+                }
+            }
             //Write app logs to a folder because I was bored & wanted to figure out how to save logs.
             //string logpath = assy.Location + @"\Logs\";
             //if (!Directory.Exists(logpath))
@@ -40,7 +44,6 @@ namespace ImgStat
             //logFile.Write(Environment.CommandLine);
 
 
-            Console.WriteLine("Finished. Press any key to exit.");
             Console.ReadKey();
         }
 
