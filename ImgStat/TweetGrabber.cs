@@ -72,6 +72,7 @@ namespace ImgStat
                     $"Img: {t.Media[0].ToString()}\n");
             }
 
+            //TODO/CLEANUP: Remove the stream code below.
             #region streams
             //var stream = Tweetinvi.Stream.CreateFilteredStream();
             //stream.AddTrack("#digitalart");

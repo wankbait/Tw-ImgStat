@@ -9,6 +9,7 @@
 
   <ItemGroup>
     <PackageReference Include="Cloo.clSharp" Version="1.0.1" />
+    <PackageReference Include="CsvHelper" Version="12.1.2" />
     <PackageReference Include="OpenCL.Net" Version="2.2.9" />
     <PackageReference Include="SharpDX" Version="4.2.0" />
     <PackageReference Include="SharpDX.DXGI" Version="4.2.0" />
