@@ -77,26 +77,26 @@ namespace ImgStat
         } 
         #endregion
 
-
+        //TODO/CLEANUP: Remove unused cloo code.
         #region cloo
-        public static ComputePlatform platform = ComputePlatform.Platforms[0];
+        //public static ComputePlatform platform = ComputePlatform.Platforms[0];
         
-        public static ComputeContext ctx =
-            new ComputeContext(ComputeDeviceTypes.Gpu, new ComputeContextPropertyList(platform), null, IntPtr.Zero);
+        //public static ComputeContext ctx =
+        //    new ComputeContext(ComputeDeviceTypes.Gpu, new ComputeContextPropertyList(platform), null, IntPtr.Zero);
 
-        public static ComputeCommandQueue queue = new ComputeCommandQueue(ctx,
-            ctx.Devices[0], ComputeCommandQueueFlags.None);
+        //public static ComputeCommandQueue queue = new ComputeCommandQueue(ctx,
+        //    ctx.Devices[0], ComputeCommandQueueFlags.None);
 
-        public static ComputeProgram program = new ComputeProgram(ctx, KernelSrc);
+        //public static ComputeProgram program = new ComputeProgram(ctx, KernelSrc);
 
-        public static bool isInitialized = false;
+        //public static bool isInitialized = false;
 
-        public static void Init()
-        {
-            isInitialized = true;
-            Console.WriteLine(ctx.Devices.ToString());
-            program.Build(null, null, null, IntPtr.Zero);
-        }
+        //public static void Init()
+        //{
+        //    isInitialized = true;
+        //    Console.WriteLine(ctx.Devices.ToString());
+        //    program.Build(null, null, null, IntPtr.Zero);
+        //}
         #endregion
     }
     class ImgParser
@@ -109,6 +109,7 @@ namespace ImgStat
         {
 
             ErrorCode err;
+
 
             using (OpenCL.Net.Program program = Cl.CreateProgramWithSource(clInfo._context, 1, new[] { clInfo.KernelSrc }, null, out err))
             {
@@ -207,6 +208,7 @@ namespace ImgStat
 
             }
 
+            //TODO/CLEANUP: Remove unused cloo code.
             #region Cloo
             //Console.WriteLine($"Parsing {file} on platform: {clInfo.platform.Name}");
 
