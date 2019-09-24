@@ -57,14 +57,54 @@ namespace ImgStat
         public static void Fetch(int num)
         {
             Console.Write($"Running Command: Fetch {num} \n");
-            var stream = Tweetinvi.Stream.CreateFilteredStream();
-            stream.ClearCustomQueryParameters();
-            stream.AddCustomQueryParameter("art", "#digitalart");
-            stream.MatchingTweetReceived += (sender, args) => {
-                Console.WriteLine(args.Tweet);
-                Console.WriteLine(args.Tweet.FavoriteCount);
+            var searchParams = new SearchTweetsParameters("#digitalart") {
+                SearchType = Tweetinvi.Models.SearchResultType.Mixed,
+                MaximumNumberOfResults = num,
+                Filters = TweetSearchFilters.Images
             };
-            stream.StartStreamMatchingAllConditionsAsync();
+
+            var tweets = Search.SearchTweets(searchParams);
+
+            foreach (var t in tweets)
+            {
+                Console.Write($"{t.FullText}\n" +
+                    $"Fav: {t.FavoriteCount} RT: {t.RetweetCount} \n" +
+                    $"Img: {t.Media[0].ToString()}\n");
+            }
+
+            #region streams
+            //var stream = Tweetinvi.Stream.CreateFilteredStream();
+            //stream.AddTrack("#digitalart");
+
+            //stream.StallWarnings = true;
+
+            //stream.MatchingTweetReceived += (evnt, args) =>
+            //{
+            //    Console.WriteLine(args.Tweet);
+            //};
+
+            //stream.KeepAliveReceived += (sender, args) =>
+            //{
+            //    Console.WriteLine("WARN: KEEP ALIVE RECIEVED");
+            //};
+
+            //stream.DisconnectMessageReceived += (sender, args) =>
+            //{
+            //    Console.WriteLine("WARN: DisconnectMessageReceived " + args.DisconnectMessage);
+            //};
+
+            //stream.WarningFallingBehindDetected += (sender, args) =>
+            //{
+            //    Console.WriteLine("WARN: WarningFallingBehindDetected " + args.WarningMessage);
+            //};
+
+            //stream.StreamStopped += (sender, args) =>
+            //{
+            //    Console.WriteLine("StreamStopped " + args.DisconnectMessage);
+            //};
+
+            //stream.StartStreamMatchingAllConditions();
+            #endregion
         }
     }
 }
