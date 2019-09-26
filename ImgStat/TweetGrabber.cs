@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Text;
+using System.Threading.Tasks;
 using Tweetinvi;
 using Tweetinvi.Parameters;
 
+using CsvHelper;
+using System.Linq;
 
 namespace ImgStat
 {
@@ -56,22 +58,50 @@ namespace ImgStat
         }
         public static void Fetch(int num)
         {
-            Console.Write($"Running Command: Fetch {num} \n");
-            var searchParams = new SearchTweetsParameters("#digitalart") {
+            Console.Write($"Fetching {num} tweets... \n");
+            var searchParams = new SearchTweetsParameters("*#digitalart") {
                 SearchType = Tweetinvi.Models.SearchResultType.Mixed,
                 MaximumNumberOfResults = num,
-                Filters = TweetSearchFilters.Images
+                Filters = TweetSearchFilters.Twimg
             };
-
-            var tweets = Search.SearchTweets(searchParams);
-
-            foreach (var t in tweets)
-            {
-                Console.Write($"{t.FullText}\n" +
-                    $"Fav: {t.FavoriteCount} RT: {t.RetweetCount} \n" +
-                    $"Img: {t.Media[0].ToString()}\n");
+            string csvPath = $@"{Environment.CurrentDirectory}\Tweets\";
+            string csvFile = csvPath + $"tweets_{DateTime.UtcNow.ToOADate()}.csv";
+            if (!Directory.Exists(csvPath)) {
+                Directory.CreateDirectory(csvPath);
+                File.Create(csvFile);
             }
 
+            //Enumerate "tweets" with results from a search.
+            IEnumerable<Tweetinvi.Models.ITweet> tweets = null;
+            try { tweets = Search.SearchTweets(searchParams); }
+            catch(Exception e)
+            {
+                //In the event of an exception, print to console with feedback; do not continue the script
+                Console.Write($"E: Couldn't complete tweet search. \n \n Exception Msg: \n{e.ToString()}");
+                return;
+            }
+
+            //using the "using" command disposes of and flushes both the StreamWriter and CsvWriter at the end; no need to do that manually
+            using(StreamWriter streamWriter = new StreamWriter(csvFile))
+            using(CsvWriter csv = new CsvWriter(streamWriter))
+            {
+                csv.WriteHeader(typeof(Tweet));
+                //Loop through the tweet results & add them to a CSV document.
+                foreach (Tweetinvi.Models.ITweet t in tweets)
+                {
+                    //create a "slim" tweet object with only a few fields
+                    //using the ITweet object returned from tweetinvi results in a stack overflow error.
+                    Tweet slim = new Tweet(t);
+
+                    //Write record to file
+                    csv.NextRecord();
+                    csv.WriteRecord(slim);
+
+                    //provide some feedback in the console
+                    Console.WriteLine($"Wrote tweet with ID: {slim.Id} to file {csvFile} \n \n");
+                }
+            }
+            
             //TODO/CLEANUP: Remove the stream code below.
             #region streams
             //var stream = Tweetinvi.Stream.CreateFilteredStream();

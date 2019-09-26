@@ -12,37 +12,31 @@ namespace ImgStat
         {
             Console.WriteLine("Hello World!");
             TweetGrabber.Init();
-            while (true)
-            {
-                Console.WriteLine("Press (1) to grab tweets, (2) to process tweets. Press anything else to exit.");
-                ConsoleKeyInfo keyInfo = Console.ReadKey();
-                if(keyInfo.KeyChar == '1')
-                {
-                    Console.WriteLine("\nEnter max tweets: ");
-                    int max = int.Parse(Console.ReadLine());
-                    TweetGrabber.Fetch(max);
-                }
-                else if(keyInfo.KeyChar == '2')
-                {
-                    clInfo.Setup();
-                    ImgParser parser = new ImgParser();
-                    //TODO: Do something.
-                    break;
-                }
-                else
-                {
-                    break;
-                }
-            }
-            //Write app logs to a folder because I was bored & wanted to figure out how to save logs.
-            //string logpath = assy.Location + @"\Logs\";
-            //if (!Directory.Exists(logpath))
+            TweetGrabber.Fetch(5);
+            Console.ReadKey();
+            //while (true)
             //{
-            //    string dir = Directory.CreateDirectory(logpath).FullName;
+            //    Console.WriteLine("Press (1) to grab tweets, (2) to process tweets. Press anything else to exit.");
+            //    ConsoleKeyInfo keyInfo = Console.ReadKey();
+            //    if(keyInfo.KeyChar == '1')
+            //    {
+            //        Console.WriteLine("\nEnter max tweets: ");
+            //        int max = int.Parse(Console.ReadLine());
+            //        TweetGrabber.Fetch(max);
+            //        Console.ReadKey();
+            //    }
+            //    else if(keyInfo.KeyChar == '2')
+            //    {
+            //        clInfo.Setup();
+            //        ImgParser parser = new ImgParser();
+            //        //TODO: Do something.
+            //        break;
+            //    }
+            //    else
+            //    {
+            //        break;
+            //    }
             //}
-            //var logFile = File.CreateText($"{logpath}\\LOG_{System.DateTime.UtcNow}");
-            //logFile.Write(Environment.CommandLine);
-
 
             Console.ReadKey();
         }
