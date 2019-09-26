@@ -59,7 +59,7 @@ namespace ImgStat
         public static void Fetch(int num)
         {
             Console.Write($"Fetching {num} tweets... \n");
-            var searchParams = new SearchTweetsParameters("*#digitalart") {
+            var searchParams = new SearchTweetsParameters("*#digitalart #portrait") {
                 SearchType = Tweetinvi.Models.SearchResultType.Mixed,
                 MaximumNumberOfResults = num,
                 Filters = TweetSearchFilters.Twimg
