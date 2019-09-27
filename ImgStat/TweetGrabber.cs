@@ -7,6 +7,7 @@ using Tweetinvi.Parameters;
 
 using CsvHelper;
 using System.Linq;
+using System.Net;
 
 namespace ImgStat
 {
@@ -98,7 +99,7 @@ namespace ImgStat
                     csv.WriteRecord(slim);
 
                     //provide some feedback in the console
-                    Console.WriteLine($"Wrote tweet with ID: {slim.ID} to file {csvFile} \n \n");
+                    Console.WriteLine($"Wrote tweet with ID: {slim.ID} to file {csvFile} \n");
                 }
             }
             
@@ -136,6 +137,40 @@ namespace ImgStat
 
             //stream.StartStreamMatchingAllConditions();
             #endregion
+        }
+
+        public static void Download()
+        {
+            Console.WriteLine("--downloading");
+            string csvPath = $@"{Environment.CurrentDirectory}\Tweets\";
+            string dlPath = $@"{Environment.CurrentDirectory}\Download\";
+            foreach(string filePath in Directory.EnumerateFiles(csvPath))
+            {
+                using (StreamReader streamReader = new StreamReader(filePath))
+                using (CsvReader csvReader = new CsvReader(streamReader))
+                {
+                    csvReader.Configuration.RegisterClassMap<TweetMap>();
+                    csvReader.Read();
+                    csvReader.ReadHeader();
+                    using(WebClient webClient = new WebClient())
+                    {
+                        IEnumerable<Tweet> records = csvReader.GetRecords<Tweet>();
+                        Tweet rec = records.First();
+                        UriBuilder uri = new UriBuilder(rec.MediaUrl);
+                        webClient.DownloadFile(uri.Uri, rec.ID.ToString());
+                        webClient.DownloadProgressChanged += (object sender, DownloadProgressChangedEventArgs e) =>
+                        {
+                            Console.Write($"\r Downloading {rec.ID} : {e.ProgressPercentage}");
+                        };
+                        //foreach (Tweet rec in records)
+                        {
+                            
+
+                        }
+                    }                    
+                }
+            }
+            
         }
     }
 }

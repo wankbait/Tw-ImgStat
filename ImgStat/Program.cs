@@ -12,7 +12,8 @@ namespace ImgStat
         {
             Console.WriteLine("Hello World!");
             TweetGrabber.Init();
-            TweetGrabber.Fetch(5);
+            //TweetGrabber.Fetch(5);
+            TweetGrabber.Download();
             Console.ReadKey();
             //while (true)
             //{
