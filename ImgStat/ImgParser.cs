@@ -3,7 +3,6 @@ using System.Collections;
 using System.IO;
 using System.Drawing;
 using System.Drawing.Imaging;
-using Cloo;
 using OpenCL.Net;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
@@ -77,27 +76,6 @@ namespace ImgStat
         } 
         #endregion
 
-        //TODO/CLEANUP: Remove unused cloo code.
-        #region cloo
-        //public static ComputePlatform platform = ComputePlatform.Platforms[0];
-        
-        //public static ComputeContext ctx =
-        //    new ComputeContext(ComputeDeviceTypes.Gpu, new ComputeContextPropertyList(platform), null, IntPtr.Zero);
-
-        //public static ComputeCommandQueue queue = new ComputeCommandQueue(ctx,
-        //    ctx.Devices[0], ComputeCommandQueueFlags.None);
-
-        //public static ComputeProgram program = new ComputeProgram(ctx, KernelSrc);
-
-        //public static bool isInitialized = false;
-
-        //public static void Init()
-        //{
-        //    isInitialized = true;
-        //    Console.WriteLine(ctx.Devices.ToString());
-        //    program.Build(null, null, null, IntPtr.Zero);
-        //}
-        #endregion
     }
     class ImgParser
     {
@@ -109,7 +87,6 @@ namespace ImgStat
         {
 
             ErrorCode err;
-
 
             using (OpenCL.Net.Program program = Cl.CreateProgramWithSource(clInfo._context, 1, new[] { clInfo.KernelSrc }, null, out err))
             {
@@ -208,32 +185,6 @@ namespace ImgStat
 
             }
 
-            //TODO/CLEANUP: Remove unused cloo code.
-            #region Cloo
-            //Console.WriteLine($"Parsing {file} on platform: {clInfo.platform.Name}");
-
-            //ComputeKernel kernel = clInfo.program.CreateKernel("helloWorld");
-            //// create a ten integer array and its length
-            //int[] message = new int[] { 1, 2, 3, 4, 5 };
-            //int messageSize = message.Length;
-
-            //// allocate a memory buffer with the message (the int array)
-            //ComputeBuffer<int> messageBuffer = new ComputeBuffer<int>(clInfo.ctx,
-            //ComputeMemoryFlags.ReadOnly | ComputeMemoryFlags.UseHostPointer, message);
-
-            //ComputeBuffer<ComputeImageFormat> computeBuffer = new ComputeBuffer<ComputeImageFormat>(clInfo.ctx, ComputeMemoryFlags.ReadOnly, 1L, new Bitmap(file).GetHbitmap());
-
-
-            //kernel.SetMemoryArgument(0, messageBuffer); // set the integer array
-            //kernel.SetValueArgument(1, messageSize); // set the array size
-
-            //kernel.SetMemoryArgument(2, computeBuffer);
-
-            //// execute kernel
-            //clInfo.queue.ExecuteTask(kernel, null);
-            //clInfo.queue.Finish();
-            //Console.Read();
-            #endregion
         }
 
         /* Fallback CPU processing */

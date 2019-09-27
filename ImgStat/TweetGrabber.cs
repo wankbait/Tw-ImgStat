@@ -98,7 +98,7 @@ namespace ImgStat
                     csv.WriteRecord(slim);
 
                     //provide some feedback in the console
-                    Console.WriteLine($"Wrote tweet with ID: {slim.Id} to file {csvFile} \n \n");
+                    Console.WriteLine($"Wrote tweet with ID: {slim.ID} to file {csvFile} \n \n");
                 }
             }
             

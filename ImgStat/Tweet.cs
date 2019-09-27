@@ -8,9 +8,9 @@ namespace ImgStat
     //Small tweet object to write to CSV (using Tweetinvi.Models.ITweet produced a stack overflow within VS, and was too slow anyway)
     public class Tweet
     {
-        public long Id { get; }
-        public int Favorites { get; }
-        public int RTCount { get; }
+        public long ID { get; }
+        public int Fav { get; }
+        public int RT { get; }
         public int? Replies { get; }
         public DateTime CreationTime { get; }
         public string Content { get;  }
@@ -19,7 +19,7 @@ namespace ImgStat
         public string TweetUrl { get; }
         public Tweet(Tweetinvi.Models.ITweet tweet)
         {
-            this.Id = tweet.Id;
+            this.ID = tweet.Id;
             this.Content = tweet.FullText;
             try
             {
@@ -36,9 +36,9 @@ namespace ImgStat
                     //TODO
                 }
             }
-            this.Favorites = tweet.FavoriteCount;
+            this.Fav = tweet.FavoriteCount;
             this.CreationTime = tweet.CreatedAt;
-            this.RTCount = tweet.RetweetCount;
+            this.RT = tweet.RetweetCount;
             var temp = tweet.ReplyCount;
             if (temp == null)
             {
