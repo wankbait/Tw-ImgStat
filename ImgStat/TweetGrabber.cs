@@ -5,7 +5,8 @@ using System.Threading.Tasks;
 using Tweetinvi;
 using Tweetinvi.Parameters;
 
-using CsvHelper;
+//using CsvHelper;
+using NReco.Csv;
 using System.Linq;
 using System.Net;
 
@@ -84,19 +85,27 @@ namespace ImgStat
 
             //using the "using" command disposes of and flushes both the StreamWriter and CsvWriter at the end; no need to do that manually
             using(StreamWriter streamWriter = new StreamWriter(csvFile))
-            using(CsvWriter csv = new CsvWriter(streamWriter))
             {
-                csv.WriteHeader(typeof(CTweet));
+                CsvWriter csv = new CsvWriter(streamWriter);
+                //csv.WriteHeader(typeof(CTweet));
                 //Loop through the tweet results & add them to a CSV document.
                 foreach (Tweetinvi.Models.ITweet t in tweets)
                 {
                     //create a "slim" tweet object with only a few fields
                     //using the ITweet object returned from tweetinvi results in a stack overflow error.
                     CTweet slim = new CTweet(t);
-
+                    csv.WriteField(slim.ID.ToString());
+                    csv.WriteField(slim.Fav.ToString());
+                    csv.WriteField(slim.RT.ToString());
+                    csv.WriteField(slim.Replies.ToString());
+                    csv.WriteField(slim.MediaUrl.ToString());
+                    csv.WriteField(slim.TweetUrl.ToString());
+                    csv.WriteField(slim.Content.ToString());
+                    csv.WriteField(slim.CreationTime.ToString());
                     //Write record to file
                     csv.NextRecord();
-                    csv.WriteRecord(slim);
+
+                    //csv.WriteRecord(slim);
 
                     //provide some feedback in the console
                     Console.WriteLine($"Wrote tweet with ID: {slim.ID} to file {csvFile} \n");
@@ -147,27 +156,27 @@ namespace ImgStat
             foreach(string filePath in Directory.EnumerateFiles(csvPath))
             {
                 using (StreamReader streamReader = new StreamReader(filePath))
-                using (CsvReader csvReader = new CsvReader(streamReader))
                 {
-                    csvReader.Configuration.MemberTypes = CsvHelper.Configuration.MemberTypes.Properties;
-                    csvReader.Configuration.UnregisterClassMap(typeof(TweetMap));
+                    CsvReader csvReader = new CsvReader(streamReader);
+                    
+                    
+                    //csvReader.Configuration.MemberTypes = CsvHelper.Configuration.MemberTypes.Properties;
+                    //csvReader.Configuration.UnregisterClassMap(typeof(TweetMap));
                     csvReader.Read();
-                    csvReader.ReadHeader();
+                    //csvReader.ReadHeader();
                     using(WebClient webClient = new WebClient())
                     {
-                        var records = csvReader.GetRecords<MTweet>();
-                        var rec = records.First();
-                        UriBuilder uri = new UriBuilder(rec.MediaUrl);
-                        webClient.DownloadFile(uri.Uri, rec.ID.ToString());
-                        webClient.DownloadProgressChanged += (object sender, DownloadProgressChangedEventArgs e) =>
-                        {
-                            Console.Write($"\r Downloading {rec.ID} : {e.ProgressPercentage}");
-                        };
-                        //foreach (Tweet rec in records)
-                        {
-                            
 
+                        while (csvReader.Read())
+                        {
+                            UriBuilder uri = new UriBuilder(rec.MediaUrl);
+                            webClient.DownloadFile(uri.Uri, rec.ID.ToString());
+                            webClient.DownloadProgressChanged += (object sender, DownloadProgressChangedEventArgs e) =>
+                            {
+                                Console.Write($"\r Downloading {rec.ID} : {e.ProgressPercentage}");
+                            };
                         }
+                        
                     }                    
                 }
             }
