@@ -5,29 +5,29 @@ using Tweetinvi;
 using CsvHelper;
 using CsvHelper.TypeConversion;
 using CsvHelper.Configuration.Attributes;
-namespace ImgStat
-{
+
     //Small tweet object to write to CSV (using Tweetinvi.Models.ITweet produced a stack overflow within VS, and was too slow anyway)
-    public class Tweet
+    public class CTweet : MTweet
     {
         [Index(0)]
-        public long ID { get; }
+    new public long ID { get; }
         [Index(1)]
-        public int Fav { get; }
+    new public int Fav { get; }
         [Index(2)]
-        public int RT { get; }
+    new public int RT { get; }
         [Index(3)]
-        public int? Replies { get; }
+    new public int? Replies { get; }
         [Index(4)]
-        public DateTime CreationTime { get; }
+    new public DateTime CreationTime { get; }
         [Index(5)]
-        public string Content { get;  }
+    new public string Content { get; }
         [Index(6)]
-        public string MediaUrl { get; }
+    new public string MediaUrl { get; }
         [Index(7)]
-        public string TweetUrl { get; } //Should this be removed to preserve anonymity? Or will it not matter because it will not be included in the paper?
+    new public string TweetUrl { get; } //Should this be removed to preserve anonymity? Or will it not matter because it will not be included in the paper?
+
         public Type tweet = null;
-        public Tweet(Tweetinvi.Models.ITweet tweet)
+    public CTweet(Tweetinvi.Models.ITweet tweet)
         {
             this.ID = tweet.Id;
             this.Content = tweet.FullText;
@@ -60,16 +60,36 @@ namespace ImgStat
             }
             this.TweetUrl = tweet.Url;
         }
-        public Tweet(int dummy)
-        {
-
-        }
+        
     }
 
-    public class TweetMap : CsvHelper.Configuration.ClassMap<Tweet>
+    //Minimal Tweet (no constructor)
+    public class MTweet
+    {
+        [Index(0)]
+        public long ID { get; }
+        [Index(1)]
+        public int Fav { get; }
+        [Index(2)]
+        public int RT { get; }
+        [Index(3)]
+        public int? Replies { get; }
+        [Index(4)]
+        public DateTime CreationTime { get; }
+        [Index(5)]
+        public string Content { get; }
+        [Index(6)]
+        public string MediaUrl { get; }
+        [Index(7)]
+        public string TweetUrl { get; } //Should this be removed to preserve anonymity? Or will it not matter because it will not be included in the paper?
+    }
+
+
+    public class TweetMap : CsvHelper.Configuration.ClassMap<MTweet>
     {
         public TweetMap()
         {
+            AutoMap();
             Map(m => m.ID).Name("ID");
             Map(m => m.Fav).Name("Fav");
             Map(m => m.RT).Name("RT");
@@ -78,7 +98,6 @@ namespace ImgStat
             Map(m => m.Content).Name("Content");
             Map(m => m.MediaUrl).Name("MediaUrl");
             Map(m => m.TweetUrl).Name("TweetUrl");
-
 
             Map(m => m.ID).Index(0);
             Map(m => m.Fav).Index(1);
@@ -90,4 +109,4 @@ namespace ImgStat
             Map(m => m.TweetUrl).Index(7);
         }
     }
-}
+

@@ -86,13 +86,13 @@ namespace ImgStat
             using(StreamWriter streamWriter = new StreamWriter(csvFile))
             using(CsvWriter csv = new CsvWriter(streamWriter))
             {
-                csv.WriteHeader(typeof(Tweet));
+                csv.WriteHeader(typeof(CTweet));
                 //Loop through the tweet results & add them to a CSV document.
                 foreach (Tweetinvi.Models.ITweet t in tweets)
                 {
                     //create a "slim" tweet object with only a few fields
                     //using the ITweet object returned from tweetinvi results in a stack overflow error.
-                    Tweet slim = new Tweet(t);
+                    CTweet slim = new CTweet(t);
 
                     //Write record to file
                     csv.NextRecord();
@@ -149,13 +149,14 @@ namespace ImgStat
                 using (StreamReader streamReader = new StreamReader(filePath))
                 using (CsvReader csvReader = new CsvReader(streamReader))
                 {
-                    csvReader.Configuration.RegisterClassMap<TweetMap>();
+                    csvReader.Configuration.MemberTypes = CsvHelper.Configuration.MemberTypes.Properties;
+                    csvReader.Configuration.UnregisterClassMap(typeof(TweetMap));
                     csvReader.Read();
                     csvReader.ReadHeader();
                     using(WebClient webClient = new WebClient())
                     {
-                        IEnumerable<Tweet> records = csvReader.GetRecords<Tweet>();
-                        Tweet rec = records.First();
+                        var records = csvReader.GetRecords<MTweet>();
+                        var rec = records.First();
                         UriBuilder uri = new UriBuilder(rec.MediaUrl);
                         webClient.DownloadFile(uri.Uri, rec.ID.ToString());
                         webClient.DownloadProgressChanged += (object sender, DownloadProgressChangedEventArgs e) =>
