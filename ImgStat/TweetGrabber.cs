@@ -61,7 +61,8 @@ namespace ImgStat
         public static void Fetch(int num)
         {
             Console.Write($"Fetching {num} tweets... \n");
-            var searchParams = new SearchTweetsParameters("*#digitalart #portrait") {
+
+            var searchParams = new SearchTweetsParameters("*#digitalart #portrait filter:media -filter:replies -filter:retweets") {
                 SearchType = Tweetinvi.Models.SearchResultType.Mixed,
                 MaximumNumberOfResults = num,
                 Filters = TweetSearchFilters.Twimg
@@ -93,7 +94,7 @@ namespace ImgStat
                 {
                     //create a "slim" tweet object with only a few fields
                     //using the ITweet object returned from tweetinvi results in a stack overflow error.
-                    CTweet slim = new CTweet(t);
+                    Tweet slim = new Tweet(t);
                     csv.WriteField(slim.ID.ToString());
                     csv.WriteField(slim.Fav.ToString());
                     csv.WriteField(slim.RT.ToString());
@@ -147,38 +148,89 @@ namespace ImgStat
             //stream.StartStreamMatchingAllConditions();
             #endregion
         }
-
         public static void Download()
+        {
+            Download(1);
+        }
+
+        public static void Download(int num)
         {
             Console.WriteLine("--downloading");
             string csvPath = $@"{Environment.CurrentDirectory}\Tweets\";
             string dlPath = $@"{Environment.CurrentDirectory}\Download\";
-            foreach(string filePath in Directory.EnumerateFiles(csvPath))
+            try
             {
-                using (StreamReader streamReader = new StreamReader(filePath))
+                foreach(string filePath in Directory.EnumerateFiles(csvPath))
                 {
-                    CsvReader csvReader = new CsvReader(streamReader);
-                    
-                    
-                    //csvReader.Configuration.MemberTypes = CsvHelper.Configuration.MemberTypes.Properties;
-                    //csvReader.Configuration.UnregisterClassMap(typeof(TweetMap));
-                    csvReader.Read();
-                    //csvReader.ReadHeader();
-                    using(WebClient webClient = new WebClient())
+                    using (StreamReader streamReader = new StreamReader(filePath))
                     {
-
-                        while (csvReader.Read())
+                        CsvReader csvReader = new CsvReader(streamReader);
+                    
+                    
+                        //csvReader.Configuration.MemberTypes = CsvHelper.Configuration.MemberTypes.Properties;
+                        //csvReader.Configuration.UnregisterClassMap(typeof(TweetMap));
+                        //csvReader.Read();
+                        //csvReader.ReadHeader();
+                        using(WebClient webClient = new WebClient())
                         {
-                            UriBuilder uri = new UriBuilder(rec.MediaUrl);
-                            webClient.DownloadFile(uri.Uri, rec.ID.ToString());
-                            webClient.DownloadProgressChanged += (object sender, DownloadProgressChangedEventArgs e) =>
+                            while (csvReader.Read())
                             {
-                                Console.Write($"\r Downloading {rec.ID} : {e.ProgressPercentage}");
-                            };
-                        }
-                        
-                    }                    
+                                string id = "", mediaUri = "";
+                                for ( int i = 0; i < csvReader.FieldsCount; i++)
+                                {
+                                    var fr = csvReader[i];
+                                    switch(i)
+                                    {
+                                        case 0:
+                                            id = fr;
+                                            break;
+                                        case 1:
+                                            Console.Write($"{i} {fr}");
+                                            break;
+                                        case 2:
+                                            //Console.Write($"{i} {fr}");
+                                            break;
+                                        case 3:
+                                           // Console.Write($"{i} {fr}");
+                                            //Console.WriteLine(fieldRecord);
+                                            break;
+                                        case 4:
+                                            //Console.Write($"{i} {fr}");
+                                            break;
+                                        case 5:
+                                            //Console.Write($"{i} {fr}");
+                                            break;
+                                        case 6:
+                                            mediaUri = fr;
+                                            //Console.WriteLine(fr);
+                                            break;
+                                        default:
+                                            break;
+                                    }
+                                    
+                                    
+                                }
+                                //Console.Write($"downloading {id} from: {mediaUri} \n");
+                                //UriBuilder uri = new UriBuilder(mediaUri);
+
+                                //webClient.DownloadFile(uri.Uri, id);
+                                //webClient.DownloadProgressChanged += (object sender, DownloadProgressChangedEventArgs e) =>
+                                //{
+                                //    Console.Write($"\r Downloading {id} : {e.ProgressPercentage}");
+                                //};
+                            }
+
+                        }                    
+                    }
                 }
+
+            }
+            catch(Exception e)
+            {
+                Console.WriteLine(e.ToString());
+                //Fetch(num);
+                //Download(num);
+                return;
             }
             
         }
