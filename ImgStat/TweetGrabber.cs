@@ -84,33 +84,35 @@ namespace ImgStat
                 return;
             }
 
-            //using the "using" command disposes of and flushes both the StreamWriter and CsvWriter at the end; no need to do that manually
-            using(StreamWriter streamWriter = new StreamWriter(csvFile))
+            //Using the "using" command disposes of and flushes both the StreamWriter and CsvWriter at the end; no need to do that manually
+            using (StreamWriter streamWriter = new StreamWriter(csvFile))
             {
                 CsvWriter csv = new CsvWriter(streamWriter);
+                
                 //csv.WriteHeader(typeof(CTweet));
                 //Loop through the tweet results & add them to a CSV document.
                 foreach (Tweetinvi.Models.ITweet t in tweets)
                 {
-                    //create a "slim" tweet object with only a few fields
+                    //create a "slim" tweet object with only a select few fields
                     //using the ITweet object returned from tweetinvi results in a stack overflow error.
                     Tweet slim = new Tweet(t);
-                    csv.WriteField(slim.ID.ToString());
-                    csv.WriteField(slim.Fav.ToString());
-                    csv.WriteField(slim.RT.ToString());
-                    csv.WriteField(slim.Replies.ToString());
-                    csv.WriteField(slim.MediaUrl.ToString());
-                    csv.WriteField(slim.TweetUrl.ToString());
-                    csv.WriteField(slim.Content.ToString());
-                    csv.WriteField(slim.CreationTime.ToString());
+                    csv.WriteField(slim.ID.ToString());//0
+                    csv.WriteField(slim.Fav.ToString());//1
+                    csv.WriteField(slim.RT.ToString());//2
+                    csv.WriteField(slim.Replies.ToString());//3
+                    csv.WriteField(slim.Followers.ToString());//4
+                    csv.WriteField(slim.MediaUrl.ToString());//5
+                    csv.WriteField(slim.TweetUrl.ToString());//6
+                    csv.WriteField(slim.Content.ToString());//7
+                    csv.WriteField(slim.CreationTime.ToString());//8
+                    
                     //Write record to file
                     csv.NextRecord();
-
-                    //csv.WriteRecord(slim);
 
                     //provide some feedback in the console
                     Console.WriteLine($"Wrote tweet with ID: {slim.ID} to file {csvFile} \n");
                 }
+
             }
             
             //TODO/CLEANUP: Remove the stream code below.

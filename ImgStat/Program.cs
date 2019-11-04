@@ -12,9 +12,10 @@ namespace ImgStat
         {
             Console.WriteLine("Hello World!");
             TweetGrabber.Init();
-            //TweetGrabber.Fetch(5);
+
+            //TweetGrabber.Fetch(15);
             TweetGrabber.Download();
-            Console.ReadKey();
+            
             //while (true)
             //{
             //    Console.WriteLine("Press (1) to grab tweets, (2) to process tweets. Press anything else to exit.");
