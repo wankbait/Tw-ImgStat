@@ -62,17 +62,24 @@ namespace ImgStat
         {
             Console.Write($"Fetching {num} tweets... \n");
 
-            var searchParams = new SearchTweetsParameters("*#digitalart #portrait filter:media -filter:replies -filter:retweets") {
-                SearchType = Tweetinvi.Models.SearchResultType.Mixed,
-                MaximumNumberOfResults = num,
-                Filters = TweetSearchFilters.Twimg
-            };
+
+            //Create a directory for Tweet data to be stored.
             string csvPath = $@"{Environment.CurrentDirectory}\Tweets\";
             string csvFile = csvPath + $"tweets_{DateTime.UtcNow.ToOADate()}.csv";
             if (!Directory.Exists(csvPath)) {
                 Directory.CreateDirectory(csvPath);
                 File.Create(csvFile);
             }
+
+
+            //Create parameters for the Twitter search.
+            var searchParams = new SearchTweetsParameters("*#digitalart #portrait filter:media -filter:replies -filter:retweets") {
+                SearchType = Tweetinvi.Models.SearchResultType.Mixed,
+                MaximumNumberOfResults = num,
+                Until = DateTime.Today.AddDays(-5.0),
+                Filters = TweetSearchFilters.Twimg
+            };
+
 
             //Enumerate "tweets" with results from a search.
             IEnumerable<Tweetinvi.Models.ITweet> tweets = null;
@@ -81,6 +88,12 @@ namespace ImgStat
             {
                 //In the event of an exception, print to console with feedback; do not continue the script
                 Console.Write($"E: Couldn't complete tweet search. \n \n Exception Msg: \n{e.ToString()}");
+                return;
+            }
+            //Stop early in case we don't get shit.
+            if (tweets.Count() <= 0)
+            {
+                Console.WriteLine("Search returned 0 results.");
                 return;
             }
 
@@ -150,16 +163,17 @@ namespace ImgStat
             //stream.StartStreamMatchingAllConditions();
             #endregion
         }
+        
+        //Download images based on CSV output
         public static void Download()
-        {
-            Download(1);
-        }
-
-        public static void Download(int num)
         {
             Console.WriteLine("--downloading");
             string csvPath = $@"{Environment.CurrentDirectory}\Tweets\";
             string dlPath = $@"{Environment.CurrentDirectory}\Download\";
+            if (!Directory.Exists(dlPath))
+            {
+                Directory.CreateDirectory(dlPath);
+            }
             try
             {
                 foreach(string filePath in Directory.EnumerateFiles(csvPath))
@@ -175,36 +189,39 @@ namespace ImgStat
                         //csvReader.ReadHeader();
                         using(WebClient webClient = new WebClient())
                         {
+                            csvReader.Read();
                             while (csvReader.Read())
                             {
                                 string id = "", mediaUri = "";
                                 for ( int i = 0; i < csvReader.FieldsCount; i++)
                                 {
                                     var fr = csvReader[i];
-                                    switch(i)
+
+                                    //Console.WriteLine(i);
+                                    //Console.WriteLine(fr);
+
+                                    switch (i)
                                     {
                                         case 0:
                                             id = fr;
                                             break;
                                         case 1:
-                                            Console.Write($"{i} {fr}");
                                             break;
                                         case 2:
-                                            //Console.Write($"{i} {fr}");
                                             break;
                                         case 3:
-                                           // Console.Write($"{i} {fr}");
-                                            //Console.WriteLine(fieldRecord);
                                             break;
                                         case 4:
-                                            //Console.Write($"{i} {fr}");
+                                            
                                             break;
                                         case 5:
-                                            //Console.Write($"{i} {fr}");
+                                            //Console.WriteLine(i);
+                                            //Console.WriteLine(fr + "\n");
+                                            mediaUri = fr;
                                             break;
                                         case 6:
-                                            mediaUri = fr;
-                                            //Console.WriteLine(fr);
+                                            break;
+                                        case 7:
                                             break;
                                         default:
                                             break;
@@ -212,16 +229,16 @@ namespace ImgStat
                                     
                                     
                                 }
-                                //Console.Write($"downloading {id} from: {mediaUri} \n");
-                                //UriBuilder uri = new UriBuilder(mediaUri);
+                                Console.Write($"downloading {id} from: {mediaUri} \n");
+                                UriBuilder uri = new UriBuilder(mediaUri);
 
-                                //webClient.DownloadFile(uri.Uri, id);
-                                //webClient.DownloadProgressChanged += (object sender, DownloadProgressChangedEventArgs e) =>
-                                //{
-                                //    Console.Write($"\r Downloading {id} : {e.ProgressPercentage}");
-                                //};
+                                webClient.DownloadFile(uri.Uri, $"{dlPath}{id}.jpg");
+                                webClient.DownloadProgressChanged += (object sender, DownloadProgressChangedEventArgs e) =>
+                                {
+                                    Console.Write($"\r Downloading {id} : {e.ProgressPercentage}");
+                                };
                             }
-
+                            Console.WriteLine("Done.");
                         }                    
                     }
                 }
