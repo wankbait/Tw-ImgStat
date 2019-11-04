@@ -53,7 +53,6 @@ using CsvHelper.Configuration.Attributes;
                     //TODO: handle this
                 }
             }
-            this.Fav = tweet.FavoriteCount;
 
             //Get reply count. tweet.replycount is nullable so replace the null with zero
             var temp = tweet.ReplyCount;
