@@ -85,8 +85,11 @@ namespace ImgStat
 
         public void GetStatGPU(string file)
         {
-
+            var stopwatch = new System.Diagnostics.Stopwatch();
+            stopwatch.Start();
+            stopwatch.Restart();
             ErrorCode err;
+
 
             using (OpenCL.Net.Program program = Cl.CreateProgramWithSource(clInfo._context, 1, new[] { clInfo.KernelSrc }, null, out err))
             {
@@ -184,12 +187,17 @@ namespace ImgStat
                 Cl.ReleaseMemObject(image2DBuffer);
 
             }
-
+            Console.WriteLine(stopwatch.Elapsed);
+            stopwatch.Stop();
         }
 
         /* Fallback CPU processing */
         public void GetStat(string file)
         {
+            var stopwatch = new System.Diagnostics.Stopwatch();
+            stopwatch.Start();
+            stopwatch.Restart();
+
             Bitmap bitmap = new Bitmap(file);
 
             float TotalHue = 0.0f;
@@ -251,6 +259,8 @@ namespace ImgStat
                 $"Min         : {MinHue}, {MinSat}, {MinVal} \n" +
                 $"Max         : {MaxHue}, {MaxSat}, {MaxVal} \n");
 
+            Console.WriteLine($"\n Processing Time: {stopwatch.Elapsed}");
+            stopwatch.Stop();
         }
 
     }
