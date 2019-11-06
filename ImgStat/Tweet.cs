@@ -87,29 +87,3 @@ using CsvHelper.Configuration.Attributes;
     }
 
     
-
-    //public class TweetMap : CsvHelper.Configuration.ClassMap<Tweet>
-    //{
-    //    public TweetMap()
-    //    {
-    //        AutoMap();
-    //        Map(m => m.ID).Name("ID");
-    //        Map(m => m.Fav).Name("Fav");
-    //        Map(m => m.RT).Name("RT");
-    //        Map(m => m.Replies).Name("Replies");
-    //        Map(m => m.CreationTime).Name("CreationTIme");
-    //        Map(m => m.Content).Name("Content");
-    //        Map(m => m.MediaUrl).Name("MediaUrl");
-    //        Map(m => m.TweetUrl).Name("TweetUrl");
-
-    //        Map(m => m.ID).Index(0);
-    //        Map(m => m.Fav).Index(1);
-    //        Map(m => m.RT).Index(2);
-    //        Map(m => m.Replies).Index(3);
-    //        Map(m => m.CreationTime).Index(4);
-    //        Map(m => m.Content).Index(5);
-    //        Map(m => m.MediaUrl).Index(6);
-    //        Map(m => m.TweetUrl).Index(7);
-    //    }
-    //}
-
