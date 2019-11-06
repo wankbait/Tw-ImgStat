@@ -182,11 +182,6 @@ namespace ImgStat
                     {
                         CsvReader csvReader = new CsvReader(streamReader);
                     
-                    
-                        //csvReader.Configuration.MemberTypes = CsvHelper.Configuration.MemberTypes.Properties;
-                        //csvReader.Configuration.UnregisterClassMap(typeof(TweetMap));
-                        //csvReader.Read();
-                        //csvReader.ReadHeader();
                         using(WebClient webClient = new WebClient())
                         {
                             csvReader.Read();
