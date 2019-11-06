@@ -125,43 +125,7 @@ namespace ImgStat
                     //provide some feedback in the console
                     Console.WriteLine($"Wrote tweet with ID: {slim.ID} to file {csvFile} \n");
                 }
-
             }
-            
-            //TODO/CLEANUP: Remove the stream code below.
-            #region streams
-            //var stream = Tweetinvi.Stream.CreateFilteredStream();
-            //stream.AddTrack("#digitalart");
-
-            //stream.StallWarnings = true;
-
-            //stream.MatchingTweetReceived += (evnt, args) =>
-            //{
-            //    Console.WriteLine(args.Tweet);
-            //};
-
-            //stream.KeepAliveReceived += (sender, args) =>
-            //{
-            //    Console.WriteLine("WARN: KEEP ALIVE RECIEVED");
-            //};
-
-            //stream.DisconnectMessageReceived += (sender, args) =>
-            //{
-            //    Console.WriteLine("WARN: DisconnectMessageReceived " + args.DisconnectMessage);
-            //};
-
-            //stream.WarningFallingBehindDetected += (sender, args) =>
-            //{
-            //    Console.WriteLine("WARN: WarningFallingBehindDetected " + args.WarningMessage);
-            //};
-
-            //stream.StreamStopped += (sender, args) =>
-            //{
-            //    Console.WriteLine("StreamStopped " + args.DisconnectMessage);
-            //};
-
-            //stream.StartStreamMatchingAllConditions();
-            #endregion
         }
         
         //Download images based on CSV output
@@ -234,7 +198,7 @@ namespace ImgStat
                                 };
                             }
                             Console.WriteLine("Done.");
-                        }                    
+                        }
                     }
                 }
 
