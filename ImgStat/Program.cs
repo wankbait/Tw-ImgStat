@@ -14,8 +14,16 @@ namespace ImgStat
             TweetGrabber.Init();
 
             //TweetGrabber.Fetch(15);
-            TweetGrabber.Download();
-            
+            //TweetGrabber.Download();
+
+            ImgParser imgParser = new ImgParser();
+
+            foreach (string file in Directory.EnumerateFiles($@"{Environment.CurrentDirectory}\Download\"))
+            {
+                Console.WriteLine($@"STAT:    {file}");
+                imgParser.GetStat(file);
+            }
+
             //while (true)
             //{
             //    Console.WriteLine("Press (1) to grab tweets, (2) to process tweets. Press anything else to exit.");
