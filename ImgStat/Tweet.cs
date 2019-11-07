@@ -6,9 +6,9 @@ using CsvHelper;
 using CsvHelper.TypeConversion;
 using CsvHelper.Configuration.Attributes;
 
-    //Small tweet object to write to CSV (using Tweetinvi.Models.ITweet produced a stack overflow within VS, and was too slow anyway)
-    public class Tweet
-    {
+//Small tweet object to write to CSV (using Tweetinvi.Models.ITweet produced a stack overflow within VS, and was too slow anyway)
+public class Tweet
+{
     [Index(0)]
     public string ID { get; }
     [Index(1)]
@@ -31,59 +31,57 @@ using CsvHelper.Configuration.Attributes;
     public float LikeFollowRatio { get; }
 
     public Tweet(Tweetinvi.Models.ITweet tweet)
+    {
+        this.ID = tweet.Id.ToString();
+        this.Content = tweet.FullText;
+
+        //Get media URL
+        try
         {
-            this.ID = tweet.Id.ToString();
-            this.Content = tweet.FullText;
-            
-            //Get media URL
+            this.MediaUrl = tweet.Entities.Medias[0].MediaURL;
+        }
+        catch (Exception e)
+        {
             try
             {
-                this.MediaUrl = tweet.Entities.Medias[0].MediaURL;
+                this.MediaUrl = tweet.ExtendedTweet.ExtendedEntities.Medias[0].MediaURL;
             }
-            catch (Exception e)
+            catch (Exception e2)
             {
-                try
-                {
-                    this.MediaUrl = tweet.ExtendedTweet.ExtendedEntities.Medias[0].MediaURL;
-                }
-                catch (Exception e2)
-                {
-                    Console.Error.WriteLine("FOR SOME REASON THERE IS NO IMAGE LINK IN THIS IMAGE TWEET \n GO YELL AT TWITTER FOR THIS I GUESS");
-                    throw new Exception();
-                    //TODO: handle this
-                }
+                Console.Error.WriteLine("FOR SOME REASON THERE IS NO IMAGE LINK IN THIS IMAGE TWEET \n GO YELL AT TWITTER FOR THIS I GUESS");
+                throw new Exception();
+                //TODO: handle this
             }
+        }
 
-            //Get reply count. tweet.replycount is nullable so replace the null with zero
-            var temp = tweet.ReplyCount;
-            if (temp == null)
-            {
-                this.Replies = 0;
-            }
-            else
-            {
-                this.Replies = temp;
-            }
-            this.Fav = tweet.FavoriteCount;
-            this.CreationTime = tweet.CreatedAt;
-            this.RT = tweet.RetweetCount;
-            this.TweetUrl = tweet.Url;
-            this.Followers = tweet.CreatedBy.FollowersCount;
+        //Get reply count. tweet.replycount is nullable so replace the null with zero
+        var temp = tweet.ReplyCount;
+        if (temp == null)
+        {
+            this.Replies = 0;
+        }
+        else
+        {
+            this.Replies = temp;
+        }
+        this.Fav = tweet.FavoriteCount;
+        this.CreationTime = tweet.CreatedAt;
+        this.RT = tweet.RetweetCount;
+        this.TweetUrl = tweet.Url;
+        this.Followers = tweet.CreatedBy.FollowersCount;
 
-            //Use this to take into account user popularity
-            if (Fav != 0)
-            {
-                this.LikeFollowRatio = Followers / Fav;
-
-            }
-            else
-            {
-
-                this.LikeFollowRatio = -1;
-            }
+        //Use this to take into account user popularity
+        if (Fav != 0)
+        {
+            this.LikeFollowRatio = Followers / Fav;
 
         }
-        
+        else
+        {
+
+            this.LikeFollowRatio = -1;
+        }
+
     }
 
-    
+}

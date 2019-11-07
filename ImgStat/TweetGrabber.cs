@@ -24,10 +24,10 @@ namespace ImgStat
                 using (StreamReader r = new StreamReader(authFile))
                 {
                     string line;
-                    while((line = r.ReadLine()) != null)
+                    while ((line = r.ReadLine()) != null)
                     {
                         string[] token = line.Split('=');
-                        if(token[0] == "CONSUMER_TOKEN")
+                        if (token[0] == "CONSUMER_TOKEN")
                         {
                             cToken = token[1];
                         }
@@ -56,7 +56,7 @@ namespace ImgStat
                 Console.Error.WriteLine(e.Message);
             }
             Auth.SetUserCredentials(cToken, cSecret, aToken, aSecret);
-            
+
         }
         public static void Fetch(int num)
         {
@@ -66,14 +66,16 @@ namespace ImgStat
             //Create a directory for Tweet data to be stored.
             string csvPath = $@"{Environment.CurrentDirectory}\Tweets\";
             string csvFile = csvPath + $"tweets_{DateTime.UtcNow.ToOADate()}.csv";
-            if (!Directory.Exists(csvPath)) {
+            if (!Directory.Exists(csvPath))
+            {
                 Directory.CreateDirectory(csvPath);
                 File.Create(csvFile);
             }
 
 
             //Create parameters for the Twitter search.
-            var searchParams = new SearchTweetsParameters("*#digitalart #portrait filter:media -filter:replies -filter:retweets") {
+            var searchParams = new SearchTweetsParameters("*#digitalart #portrait filter:media -filter:replies -filter:retweets")
+            {
                 SearchType = Tweetinvi.Models.SearchResultType.Mixed,
                 MaximumNumberOfResults = num,
                 Until = DateTime.Today.AddDays(-5.0),
@@ -84,7 +86,7 @@ namespace ImgStat
             //Enumerate "tweets" with results from a search.
             IEnumerable<Tweetinvi.Models.ITweet> tweets = null;
             try { tweets = Search.SearchTweets(searchParams); }
-            catch(Exception e)
+            catch (Exception e)
             {
                 //In the event of an exception, print to console with feedback; do not continue the script
                 Console.Write($"E: Couldn't complete tweet search. \n \n Exception Msg: \n{e.ToString()}");
@@ -101,7 +103,7 @@ namespace ImgStat
             using (StreamWriter streamWriter = new StreamWriter(csvFile))
             {
                 CsvWriter csv = new CsvWriter(streamWriter);
-                
+
                 //csv.WriteHeader(typeof(CTweet));
                 //Loop through the tweet results & add them to a CSV document.
                 foreach (Tweetinvi.Models.ITweet t in tweets)
@@ -118,7 +120,7 @@ namespace ImgStat
                     csv.WriteField(slim.TweetUrl.ToString());//6
                     csv.WriteField(slim.Content.ToString());//7
                     csv.WriteField(slim.CreationTime.ToString());//8
-                    
+
                     //Write record to file
                     csv.NextRecord();
 
@@ -127,7 +129,7 @@ namespace ImgStat
                 }
             }
         }
-        
+
         //Download images based on CSV output
         public static void Download()
         {
@@ -140,19 +142,19 @@ namespace ImgStat
             }
             try
             {
-                foreach(string filePath in Directory.EnumerateFiles(csvPath))
+                foreach (string filePath in Directory.EnumerateFiles(csvPath))
                 {
                     using (StreamReader streamReader = new StreamReader(filePath))
                     {
                         CsvReader csvReader = new CsvReader(streamReader);
-                    
-                        using(WebClient webClient = new WebClient())
+
+                        using (WebClient webClient = new WebClient())
                         {
                             csvReader.Read();
                             while (csvReader.Read())
                             {
                                 string id = "", mediaUri = "";
-                                for ( int i = 0; i < csvReader.FieldsCount; i++)
+                                for (int i = 0; i < csvReader.FieldsCount; i++)
                                 {
                                     var fr = csvReader[i];
 
@@ -171,7 +173,7 @@ namespace ImgStat
                                         case 3:
                                             break;
                                         case 4:
-                                            
+
                                             break;
                                         case 5:
                                             //Console.WriteLine(i);
@@ -185,8 +187,8 @@ namespace ImgStat
                                         default:
                                             break;
                                     }
-                                    
-                                    
+
+
                                 }
                                 Console.Write($"downloading {id} from: {mediaUri} \n");
                                 UriBuilder uri = new UriBuilder(mediaUri);
@@ -203,14 +205,14 @@ namespace ImgStat
                 }
 
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 Console.WriteLine(e.ToString());
                 //Fetch(num);
                 //Download(num);
                 return;
             }
-            
+
         }
     }
 }

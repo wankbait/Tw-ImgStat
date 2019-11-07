@@ -10,9 +10,10 @@ using System.Runtime.InteropServices;
 namespace ImgStat
 {
     //
-    public struct clInfo {
+    public struct clInfo
+    {
         public static string KernelSrc = new StreamReader(System.Reflection.Assembly.GetExecutingAssembly().GetManifestResourceStream("ImgStat.Kernel.cl")).ReadToEnd();
-        
+
         /*OPENCL BOILERPLATE */
         #region OCLNet
 
@@ -41,7 +42,7 @@ namespace ImgStat
 
             CheckErr(err, "Cl.GetPlatformIDs");
 
-            foreach(Platform p in platforms)
+            foreach (Platform p in platforms)
             {
                 string platformName = Cl.GetPlatformInfo(p, PlatformInfo.Name, out err).ToString();
 
@@ -73,7 +74,7 @@ namespace ImgStat
 
             _context = Cl.CreateContext(null, 1, new Device[] { _device }, ContextNotify, IntPtr.Zero, out err);
             CheckErr(err, "Cl.CreateContext");
-        } 
+        }
         #endregion
 
     }
@@ -141,10 +142,10 @@ namespace ImgStat
                     Marshal.Copy(bitmapDat.Scan0, inputByteArray, 0, imageBytesSize);
 
                     //Create & populate memory buffer for use in Kernel
-                    image2DBuffer = Cl.CreateImage2D(clInfo._context, 
-                        MemFlags.CopyHostPtr | MemFlags.ReadOnly, imageFormat, 
-                        (IntPtr)inputBitmap.Width, 
-                        (IntPtr)inputBitmap.Height, 
+                    image2DBuffer = Cl.CreateImage2D(clInfo._context,
+                        MemFlags.CopyHostPtr | MemFlags.ReadOnly, imageFormat,
+                        (IntPtr)inputBitmap.Width,
+                        (IntPtr)inputBitmap.Height,
                         (IntPtr)0, inputByteArray, out err);
 
                     clInfo.CheckErr(err, "Cl.CreateImage2D output");
