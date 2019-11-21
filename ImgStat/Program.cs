@@ -13,16 +13,19 @@ namespace ImgStat
             Console.WriteLine("Hello World!");
             TweetGrabber.Init();
 
-            //TweetGrabber.Fetch(15);
+            //TweetGrabber.Fetch(100);
             //TweetGrabber.Download();
 
             ImgParser imgParser = new ImgParser();
-
-            foreach (string file in Directory.EnumerateFiles($@"{Environment.CurrentDirectory}\Download\"))
+            var downloads = Directory.EnumerateFiles($@"{Environment.CurrentDirectory}\Download\");
+            int count = 1;
+            Parallel.ForEach(downloads, file =>
             {
-                Console.WriteLine($@"STAT:    {file}");
+                Console.Write("\n" + count + ": ");
+                Console.WriteLine($"STAT:{file}\n");
                 imgParser.GetStat(file);
-            }
+            });
+            
 
             //while (true)
             //{
