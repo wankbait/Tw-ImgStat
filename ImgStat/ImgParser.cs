@@ -109,7 +109,7 @@ namespace ImgStat
             float MinVal = 100f;
 
             char[] processChar = { '-', '\\', '|', '/' };
-            float processCharIndex = 0;
+            //float processCharIndex = 0;
             for (int x = 0; x < lockedBmp.Width; x++)
             {
                 for (int y = 0; y < lockedBmp.Height; y++)
@@ -150,7 +150,7 @@ namespace ImgStat
                 }
             }
             lockedBmp.UnlockBits();
-
+            
             Console.Write("\n");
             Console.Write($"Totals (HSV): {TotalHue}, {TotalSat}, {TotalVal}; \n" +
                 $"Mean        : {TotalHue / (lockedBmp.Width * lockedBmp.Height)}, {TotalSat / (lockedBmp.Width * lockedBmp.Height)}, {TotalVal / (lockedBmp.Width * lockedBmp.Height)} \n" +
@@ -159,6 +159,14 @@ namespace ImgStat
 
             Console.WriteLine($"\n Processing Time: {stopwatch.Elapsed}");
             stopwatch.Stop();
+
+            /*
+             * Doing this to keep memory usage down-- 
+             * haven't seen any negative effects so far,
+             * but I will have to see if data is being
+             * modified unintentionally.
+             */
+            GC.Collect();
         }
 
         /* Broken at the moment. */
