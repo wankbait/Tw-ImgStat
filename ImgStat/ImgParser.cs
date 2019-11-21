@@ -84,6 +84,84 @@ namespace ImgStat
         {
         }
 
+
+        /* Fallback CPU processing */
+        public void GetStat(string file)
+        {
+            var stopwatch = new System.Diagnostics.Stopwatch();
+            stopwatch.Start();
+            stopwatch.Restart();
+
+            Bitmap bitmap = new Bitmap(file);
+            LockBitmap lockedBmp = new LockBitmap(bitmap);
+            lockedBmp.LockBits();
+
+            float TotalHue = 0.0f;
+            float TotalSat = 0.0f;
+            float TotalVal = 0.0f;
+
+            float MaxHue = 0f;
+            float MaxSat = 0f;
+            float MaxVal = 0f;
+
+            float MinHue = 100f;
+            float MinSat = 100f;
+            float MinVal = 100f;
+
+            char[] processChar = { '-', '\\', '|', '/' };
+            float processCharIndex = 0;
+            for (int x = 0; x < lockedBmp.Width; x++)
+            {
+                for (int y = 0; y < lockedBmp.Height; y++)
+                {
+                    var Pixel = lockedBmp.GetPixel(x, y);
+                    float hue = Pixel.GetHue();
+                    float value = Pixel.GetBrightness();
+                    float sat = lockedBmp.GetPixel(x, y).GetSaturation();
+
+
+                    TotalHue += hue;
+                    TotalSat += sat;
+                    TotalVal += value;
+
+                    //Set the 
+                    if (hue > MaxHue)
+                        MaxHue = hue;
+                    if (sat > MaxSat)
+                        MaxSat = sat;
+                    if (value > MaxVal)
+                        MaxVal = value;
+
+                    if (hue < MinHue)
+                        MinHue = hue;
+                    if (sat < MinSat)
+                        MinSat = sat;
+                    if (value < MinVal)
+                        MinVal = value;
+
+                    //Just so I could make the cool little spinny thing
+                    //Also because I need to know if the program is working or not.
+                    //Console.Write("\r" + processChar[(int)processCharIndex]);
+                    //processCharIndex += 0.001f;
+                    //if (processCharIndex >= processChar.Length)
+                    //{
+                    //    processCharIndex = 0;
+                    //}
+                }
+            }
+            lockedBmp.UnlockBits();
+
+            Console.Write("\n");
+            Console.Write($"Totals (HSV): {TotalHue}, {TotalSat}, {TotalVal}; \n" +
+                $"Mean        : {TotalHue / (lockedBmp.Width * lockedBmp.Height)}, {TotalSat / (lockedBmp.Width * lockedBmp.Height)}, {TotalVal / (lockedBmp.Width * lockedBmp.Height)} \n" +
+                $"Min         : {MinHue}, {MinSat}, {MinVal} \n" +
+                $"Max         : {MaxHue}, {MaxSat}, {MaxVal} \n");
+
+            Console.WriteLine($"\n Processing Time: {stopwatch.Elapsed}");
+            stopwatch.Stop();
+        }
+
+        /* Broken at the moment. */
         public void GetStatGPU(string file)
         {
             var stopwatch = new System.Diagnostics.Stopwatch();
@@ -191,78 +269,5 @@ namespace ImgStat
             Console.WriteLine(stopwatch.Elapsed);
             stopwatch.Stop();
         }
-
-        /* Fallback CPU processing */
-        public void GetStat(string file)
-        {
-            var stopwatch = new System.Diagnostics.Stopwatch();
-            stopwatch.Start();
-            stopwatch.Restart();
-
-            Bitmap bitmap = new Bitmap(file);
-
-            float TotalHue = 0.0f;
-            float TotalSat = 0.0f;
-            float TotalVal = 0.0f;
-
-            float MaxHue = 0f;
-            float MaxSat = 0f;
-            float MaxVal = 0f;
-
-            float MinHue = 100f;
-            float MinSat = 100f;
-            float MinVal = 100f;
-
-            char[] processChar = { '-', '\\', '|', '/' };
-            float processCharIndex = 0;
-            for (int x = 0; x < bitmap.Width; x++)
-            {
-                for (int y = 0; y < bitmap.Height; y++)
-                {
-                    var Pixel = bitmap.GetPixel(x, y);
-                    float hue = Pixel.GetHue();
-                    float value = Pixel.GetBrightness();
-                    float sat = bitmap.GetPixel(x, y).GetSaturation();
-
-
-                    TotalHue += hue;
-                    TotalSat += sat;
-                    TotalVal += value;
-
-                    //Set the 
-                    if (hue > MaxHue)
-                        MaxHue = hue;
-                    if (sat > MaxSat)
-                        MaxSat = sat;
-                    if (value > MaxVal)
-                        MaxVal = value;
-
-                    if (hue < MinHue)
-                        MinHue = hue;
-                    if (sat < MinSat)
-                        MinSat = sat;
-                    if (value < MinVal)
-                        MinVal = value;
-
-                    //Just so I could make the cool little spinny thing
-                    //Also because I need to know if the program is working or not.
-                    Console.Write("\r" + processChar[(int)processCharIndex]);
-                    processCharIndex += 0.001f;
-                    if (processCharIndex >= processChar.Length)
-                    {
-                        processCharIndex = 0;
-                    }
-                }
-            }
-            Console.Write("\n");
-            Console.Write($"Totals (HSV): {TotalHue}, {TotalSat}, {TotalVal}; \n" +
-                $"Mean        : {TotalHue / (bitmap.Width * bitmap.Height)}, {TotalSat / (bitmap.Width * bitmap.Height)}, {TotalVal / (bitmap.Width * bitmap.Height)} \n" +
-                $"Min         : {MinHue}, {MinSat}, {MinVal} \n" +
-                $"Max         : {MaxHue}, {MaxSat}, {MaxVal} \n");
-
-            Console.WriteLine($"\n Processing Time: {stopwatch.Elapsed}");
-            stopwatch.Stop();
-        }
-
     }
 }
