@@ -85,7 +85,7 @@ namespace ImgStat
         }
 
 
-        /* Fallback CPU processing */
+        
         public void GetStat(string file)
         {
             var stopwatch = new System.Diagnostics.Stopwatch();
