@@ -2,9 +2,6 @@
 using System.Collections.Generic;
 using System.Text;
 using Tweetinvi;
-using CsvHelper;
-using CsvHelper.TypeConversion;
-using CsvHelper.Configuration.Attributes;
 
 //Small tweet object to write to CSV (using Tweetinvi.Models.ITweet produced a stack overflow within VS, and was too slow anyway)
 public class Tweet
