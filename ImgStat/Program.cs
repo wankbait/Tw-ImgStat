@@ -12,12 +12,12 @@ namespace ImgStat
         {
             Console.WriteLine("Hello World!");
             TweetGrabber.Init();
-
+            FileMgr.Init();
             //TweetGrabber.Fetch(100);
             //TweetGrabber.Download();
 
             ImgParser imgParser = new ImgParser();
-            var downloads = Directory.EnumerateFiles($@"{Environment.CurrentDirectory}\Download\");
+            var downloads = Directory.EnumerateFiles(FileMgr.DLPath);
             int count = 1;
             Parallel.ForEach(downloads, file =>
             {
