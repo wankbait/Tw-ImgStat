@@ -17,11 +17,10 @@ namespace ImgStat
         public static void Init()
         {
             ExceptionHandler.SwallowWebExceptions = false;
-            string authFile = $"{Environment.CurrentDirectory}\\Auth.txt";
             string cToken = "", cSecret = "", aToken = "", aSecret = "";
             try
             {
-                using (StreamReader r = new StreamReader(authFile))
+                using (StreamReader r = new StreamReader(FileMgr.AuthFile))
                 {
                     string line;
                     while ((line = r.ReadLine()) != null)
@@ -52,7 +51,7 @@ namespace ImgStat
             }
             catch (Exception e)
             {
-                Console.Error.WriteLine($"{authFile} could not be read.");
+                Console.Error.WriteLine($"{FileMgr.AuthFile} could not be read.");
                 Console.Error.WriteLine(e.Message);
             }
             Auth.SetUserCredentials(cToken, cSecret, aToken, aSecret);
@@ -63,12 +62,10 @@ namespace ImgStat
             Console.Write($"Fetching {num} tweets... \n");
 
 
-            //Create a directory for Tweet data to be stored.
-            string csvPath = $@"{Environment.CurrentDirectory}\Tweets\";
-            string csvFile = csvPath + $"tweets_{DateTime.UtcNow.ToOADate()}.csv";
-            if (!Directory.Exists(csvPath))
+            string csvFile = FileMgr.CSVPath + $"tweets_{DateTime.UtcNow.ToOADate()}.csv";
+            if (!Directory.Exists(FileMgr.CSVPath))
             {
-                Directory.CreateDirectory(csvPath);
+                Directory.CreateDirectory(FileMgr.CSVPath);
                 File.Create(csvFile);
             }
 
@@ -134,15 +131,10 @@ namespace ImgStat
         public static void Download()
         {
             Console.WriteLine("--downloading");
-            string csvPath = $@"{Environment.CurrentDirectory}\Tweets\";
-            string dlPath = $@"{Environment.CurrentDirectory}\Download\";
-            if (!Directory.Exists(dlPath))
-            {
-                Directory.CreateDirectory(dlPath);
-            }
+
             try
             {
-                foreach (string filePath in Directory.EnumerateFiles(csvPath))
+                foreach (string filePath in Directory.EnumerateFiles(FileMgr.CSVPath))
                 {
                     using (StreamReader streamReader = new StreamReader(filePath))
                     {
@@ -193,7 +185,7 @@ namespace ImgStat
                                 Console.Write($"downloading {id} from: {mediaUri} \n");
                                 UriBuilder uri = new UriBuilder(mediaUri);
 
-                                webClient.DownloadFile(uri.Uri, $"{dlPath}{id}.jpg");
+                                webClient.DownloadFile(uri.Uri, $"{FileMgr.DLPath}{id}.jpg");
                                 webClient.DownloadProgressChanged += (object sender, DownloadProgressChangedEventArgs e) =>
                                 {
                                     Console.Write($"\r Downloading {id} : {e.ProgressPercentage}");
