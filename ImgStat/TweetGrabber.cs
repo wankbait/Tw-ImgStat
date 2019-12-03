@@ -62,7 +62,7 @@ namespace ImgStat
             Console.Write($"Fetching {num} tweets... \n");
 
 
-            string csvFile = FileMgr.CSVPath + $"tweets_{DateTime.UtcNow.ToOADate()}.csv";
+            string csvFile = FileMgr.CSVPath + $"tweets.csv";
             if (!Directory.Exists(FileMgr.CSVPath))
             {
                 Directory.CreateDirectory(FileMgr.CSVPath);
@@ -89,42 +89,67 @@ namespace ImgStat
                 Console.Write($"E: Couldn't complete tweet search. \n \n Exception Msg: \n{e.ToString()}");
                 return;
             }
-            //Stop early in case we don't get shit.
+            //Stop early in case we don't get anything.
             if (tweets.Count() <= 0)
             {
                 Console.WriteLine("Search returned 0 results.");
                 return;
             }
 
-            //Using the "using" command disposes of and flushes both the StreamWriter and CsvWriter at the end; no need to do that manually
-            using (StreamWriter streamWriter = new StreamWriter(csvFile))
+            foreach (Tweetinvi.Models.ITweet t in tweets)
             {
-                CsvWriter csv = new CsvWriter(streamWriter);
+                //create a "slim" tweet object with only a select few fields
+                //using the ITweet object returned from tweetinvi results in a stack overflow error.
+                Tweet slim = new Tweet(t);
 
-                //csv.WriteHeader(typeof(CTweet));
-                //Loop through the tweet results & add them to a CSV document.
-                foreach (Tweetinvi.Models.ITweet t in tweets)
+
+                using (StreamReader streamReader = new StreamReader(csvFile))
                 {
-                    //create a "slim" tweet object with only a select few fields
-                    //using the ITweet object returned from tweetinvi results in a stack overflow error.
-                    Tweet slim = new Tweet(t);
-                    csv.WriteField(slim.ID.ToString());//0
-                    csv.WriteField(slim.Fav.ToString());//1
-                    csv.WriteField(slim.RT.ToString());//2
-                    csv.WriteField(slim.Replies.ToString());//3
-                    csv.WriteField(slim.Followers.ToString());//4
-                    csv.WriteField(slim.MediaUrl.ToString());//5
-                    csv.WriteField(slim.TweetUrl.ToString());//6
-                    csv.WriteField(slim.Content.ToString());//7
-                    csv.WriteField(slim.CreationTime.ToString());//8
-
-                    //Write record to file
-                    csv.NextRecord();
-
-                    //provide some feedback in the console
-                    Console.WriteLine($"Wrote tweet with ID: {slim.ID} to file {csvFile} \n");
+                    var csvReader = new CsvReader(streamReader, ",");
+                    while (csvReader.Read())
+                    {
+                        if(csvReader[0] == (string)slim.ID)
+                        {
+                            Console.WriteLine($"Skipping ID: {slim.ID}");
+                            goto LoopEnd;
+                        }
+                    }
                 }
+                using (StreamWriter streamWriter = new StreamWriter(csvFile))
+                {
+                    
+                    CsvWriter csv = new CsvWriter(streamWriter);
+                    //csv.WriteHeader(typeof(CTweet));
+                    //Loop through the tweet results & add them to a CSV document.
+
+
+                        csv.WriteField(slim.ID.ToString());//0
+                        csv.WriteField(slim.Fav.ToString());//1
+                        csv.WriteField(slim.RT.ToString());//2
+                        csv.WriteField(slim.Replies.ToString());//3
+                        csv.WriteField(slim.Followers.ToString());//4
+                        csv.WriteField(slim.MediaUrl.ToString());//5
+                        csv.WriteField(slim.TweetUrl.ToString());//6
+                        csv.WriteField(slim.Content.ToString());//7
+                        csv.WriteField(slim.CreationTime.ToString());//8
+
+                        //Write record to file
+                        csv.NextRecord();
+
+                        //provide some feedback in the console
+                        Console.WriteLine($"Wrote tweet with ID: {slim.ID} to file {csvFile} \n");
+
+
+                }
+            LoopEnd: Console.Write("");
+
+
             }
+            
+            //Using the "using" command disposes of and flushes both the StreamWriter and CsvWriter at the end; no need to do that manually
+            
+            
+                
         }
 
         //Download images based on CSV output
