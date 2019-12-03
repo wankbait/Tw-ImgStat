@@ -8,25 +8,30 @@ namespace ImgStat
 {
     class Program
     {
+        //TODO: Make this more user friendly for standalone build.
         static void Main(string[] args)
         {
             Console.WriteLine("Hello World!");
+
             TweetGrabber.Init();
             FileMgr.Init();
+
             //TweetGrabber.Fetch(100);
             //TweetGrabber.Download();
 
             ImgParser imgParser = new ImgParser();
             var downloads = Directory.EnumerateFiles(FileMgr.DLPath);
             int count = 1;
+            
             Parallel.ForEach(downloads, file =>
             {
                 Console.Write("\n" + count + ": ");
+                count++;
                 Console.WriteLine($"STAT:{file}\n");
                 imgParser.GetStat(file);
             });
-            
 
+            Console.WriteLine($"AVG TIME: {ImgParser.totalElapsedMS / count}ms");
             //while (true)
             //{
             //    Console.WriteLine("Press (1) to grab tweets, (2) to process tweets. Press anything else to exit.");

@@ -79,6 +79,8 @@ namespace ImgStat
     }
     class ImgParser
     {
+        public static long totalElapsedMS = 0l;
+
         public ImgParser()
         {
         }
@@ -138,14 +140,15 @@ namespace ImgStat
                     if (value < MinVal)
                         MinVal = value;
 
-                    //Just so I could make the cool little spinny thing
-                    //Also because I need to know if the program is working or not.
-                    //Console.Write("\r" + processChar[(int)processCharIndex]);
-                    //processCharIndex += 0.001f;
-                    //if (processCharIndex >= processChar.Length)
-                    //{
-                    //    processCharIndex = 0;
-                    //}
+                    /*Just so I could make the cool little spinny thing
+                    *Also because I need to know if the program is working or not.
+                    *Console.Write("\r" + processChar[(int)processCharIndex]);
+                    *processCharIndex += 0.001f;
+                    *if (processCharIndex >= processChar.Length)
+                    *{
+                    *    processCharIndex = 0;    
+                     }
+                    */
                 }
             }
             lockedBmp.UnlockBits();
@@ -159,6 +162,7 @@ namespace ImgStat
             Console.WriteLine($"\n Processing Time: {stopwatch.Elapsed}");
             stopwatch.Stop();
 
+            totalElapsedMS += stopwatch.ElapsedMilliseconds;
             /*
              * Doing this to keep memory usage down-- 
              * haven't seen any negative effects so far,
@@ -189,7 +193,8 @@ namespace ImgStat
                     clInfo.CheckErr(err, "Cl.GetProgramBuildInfo");
                     Console.WriteLine("Cl.GetProgramBuildInfo != Success");
                     Console.WriteLine(Cl.GetProgramBuildInfo(program, clInfo._device, ProgramBuildInfo.Log, out err));
-                    return;
+                    
+
                 }
 
                 //Specify the specific kernel for use
