@@ -10,6 +10,7 @@ namespace ImgStat
         public static string DLPath = $@"{Environment.CurrentDirectory}\Download\";
         public static string CSVPath = $@"{Environment.CurrentDirectory}\Tweets\";
         public static string AuthFile = $"{Environment.CurrentDirectory}\\Auth.txt";
+        public static string OutFile = $@"{Environment.CurrentDirectory}\Output.csv";
 
         public static void Init()
         {
