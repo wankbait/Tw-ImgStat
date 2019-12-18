@@ -62,19 +62,20 @@ namespace ImgStat
             Console.Write($"Fetching {num} tweets... \n");
 
 
-            string csvFile = FileMgr.CSVPath + $"tweets.csv";
+            string csvFile = FileMgr.CSVPath + $"{DateTime.Now.ToOADate()}_tweet.csv";
             if (!Directory.Exists(FileMgr.CSVPath))
             {
-                Directory.CreateDirectory(FileMgr.CSVPath);
-                File.Create(csvFile);
+                Directory.CreateDirectory(FileMgr.CSVPath);   
             }
-
-
+            if (!File.Exists(csvFile))
+            {
+                File.WriteAllText(csvFile, "");
+            }
             //Create parameters for the Twitter search.
-            var searchParams = new SearchTweetsParameters("*#digitalart #portrait filter:media -filter:replies -filter:retweets")
+            var searchParams = new SearchTweetsParameters("* #digitalart #portrait filter:media -filter:replies -filter:retweets")
             {
                 SearchType = Tweetinvi.Models.SearchResultType.Mixed,
-                MaximumNumberOfResults = num,
+                //MaximumNumberOfResults = num,
                 Until = DateTime.Today.AddDays(-5.0),
                 Filters = TweetSearchFilters.Twimg
             };
@@ -96,60 +97,74 @@ namespace ImgStat
                 return;
             }
 
-            foreach (Tweetinvi.Models.ITweet t in tweets)
+            List<string> skipID = new List<string>();
+            Console.BackgroundColor = ConsoleColor.DarkMagenta;
+            foreach (string file in Directory.EnumerateFiles(FileMgr.CSVPath))
             {
-                //create a "slim" tweet object with only a select few fields
-                //using the ITweet object returned from tweetinvi results in a stack overflow error.
-                Tweet slim = new Tweet(t);
-
-
-                using (StreamReader streamReader = new StreamReader(csvFile))
+                using (FileStream fileStream = new FileStream(file,FileMode.Open, FileAccess.ReadWrite, FileShare.ReadWrite))
+                using (StreamReader streamReader = new StreamReader(fileStream))
                 {
+                    Console.WriteLine($"Gathering old IDs from {file}...");
                     var csvReader = new CsvReader(streamReader, ",");
                     while (csvReader.Read())
                     {
-                        if(csvReader[0] == (string)slim.ID)
+                        skipID.Add(csvReader[0]);
+                    }
+                    
+                }
+            }
+            Console.ResetColor();
+
+            //create a "slim" tweet object with only a select few fields
+            //using the ITweet object returned from tweetinvi results in a stack overflow error.
+            using (FileStream fileStream = new FileStream(csvFile,FileMode.Open, FileAccess.ReadWrite, FileShare.ReadWrite))
+            using (StreamWriter streamWriter = new StreamWriter(fileStream))
+            {
+
+                CsvWriter csv = new CsvWriter(streamWriter);
+                //Loop through the tweet results & add them to a CSV document.
+
+                foreach (Tweetinvi.Models.ITweet t in tweets)
+                {
+                    foreach (string id in skipID)
+                    {
+                        if (id == t.IdStr)
                         {
-                            Console.WriteLine($"Skipping ID: {slim.ID}");
-                            goto LoopEnd;
+                            Console.ForegroundColor = ConsoleColor.DarkMagenta;
+                            Console.WriteLine($"SKIPPING TWEET WITH ID: {id}");
+                            Console.ResetColor();
+                            goto Skip;
                         }
                     }
+
+                    Tweet slim = new Tweet(t);
+
+                    csv.WriteField(slim.ID.ToString());//0
+                    csv.WriteField(slim.Fav.ToString());//1
+                    csv.WriteField(slim.RT.ToString());//2
+                    csv.WriteField(slim.Replies.ToString());//3
+                    csv.WriteField(slim.Followers.ToString());//4
+                    csv.WriteField(slim.MediaUrl.ToString());//5
+                    csv.WriteField(slim.TweetUrl.ToString());//6
+                    csv.WriteField(slim.Content.ToString());//7
+                    csv.WriteField(slim.CreationTime.ToString());//8
+
+                    //Write record to file
+                    csv.NextRecord();
+
+                    //provide some feedback in the console
+                    Console.WriteLine($"Wrote tweet with ID: {slim.ID} to file {csvFile} \n");
+                    continue;
+                    Skip: {
+                        continue;
+                    }
                 }
-                using (StreamWriter streamWriter = new StreamWriter(csvFile))
-                {
-                    
-                    CsvWriter csv = new CsvWriter(streamWriter);
-                    //csv.WriteHeader(typeof(CTweet));
-                    //Loop through the tweet results & add them to a CSV document.
-
-
-                        csv.WriteField(slim.ID.ToString());//0
-                        csv.WriteField(slim.Fav.ToString());//1
-                        csv.WriteField(slim.RT.ToString());//2
-                        csv.WriteField(slim.Replies.ToString());//3
-                        csv.WriteField(slim.Followers.ToString());//4
-                        csv.WriteField(slim.MediaUrl.ToString());//5
-                        csv.WriteField(slim.TweetUrl.ToString());//6
-                        csv.WriteField(slim.Content.ToString());//7
-                        csv.WriteField(slim.CreationTime.ToString());//8
-
-                        //Write record to file
-                        csv.NextRecord();
-
-                        //provide some feedback in the console
-                        Console.WriteLine($"Wrote tweet with ID: {slim.ID} to file {csvFile} \n");
-
-
-                }
-            LoopEnd: Console.Write("");
-
-
             }
-            
+
             //Using the "using" command disposes of and flushes both the StreamWriter and CsvWriter at the end; no need to do that manually
-            
-            
-                
+
+
+
         }
 
         //Download images based on CSV output
