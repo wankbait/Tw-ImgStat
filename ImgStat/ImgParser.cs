@@ -87,8 +87,9 @@ namespace ImgStat
 
 
         
-        public void GetStat(string file)
+        public ImgData GetStat(string file)
         {
+            ImgData outputData = new ImgData();
             var stopwatch = new System.Diagnostics.Stopwatch();
             stopwatch.Start();
             stopwatch.Restart();
@@ -109,8 +110,6 @@ namespace ImgStat
             float MinSat = 100f;
             float MinVal = 100f;
 
-            char[] processChar = { '-', '\\', '|', '/' };
-            //float processCharIndex = 0;
             for (int x = 0; x < lockedBmp.Width; x++)
             {
                 for (int y = 0; y < lockedBmp.Height; y++)
@@ -153,6 +152,7 @@ namespace ImgStat
             }
             lockedBmp.UnlockBits();
             
+            //TODO: Remove this ⬇
             Console.Write("\n");
             Console.Write($"Totals (HSV): {TotalHue}, {TotalSat}, {TotalVal}; \n" +
                 $"Mean        : {TotalHue / (lockedBmp.Width * lockedBmp.Height)}, {TotalSat / (lockedBmp.Width * lockedBmp.Height)}, {TotalVal / (lockedBmp.Width * lockedBmp.Height)} \n" +
@@ -163,6 +163,7 @@ namespace ImgStat
             stopwatch.Stop();
 
             totalElapsedMS += stopwatch.ElapsedMilliseconds;
+
             /*
              * Doing this to keep memory usage down-- 
              * haven't seen any negative effects so far,
@@ -170,6 +171,30 @@ namespace ImgStat
              * modified unintentionally.
              */
             GC.Collect();
+
+            int totalPixels = lockedBmp.Width * lockedBmp.Height;
+
+            //Max
+            outputData.MaxHue = MaxHue;
+            outputData.MaxSat = MaxSat;
+            outputData.MaxVal = MaxVal;
+
+            //Min
+            outputData.MinHue = MinHue;
+            outputData.MinSat = MinSat;
+            outputData.MinVal = MinVal;
+
+            //Mean
+            outputData.MeanHue = TotalHue / totalPixels;
+            outputData.MeanSat = TotalSat / totalPixels;
+            outputData.MeanVal = TotalVal / totalPixels;
+
+            //Totals
+            outputData.TotalHue = TotalHue;
+            outputData.TotalSat = TotalSat;
+            outputData.TotalVal = TotalVal;
+
+            return outputData;
         }
 
         /* Broken at the moment. */
@@ -282,4 +307,22 @@ namespace ImgStat
             stopwatch.Stop();
         }
     }
+}
+
+public class ImgData {
+    public float TotalHue = 0.0f;
+    public float TotalSat = 0.0f;
+    public float TotalVal = 0.0f;
+
+    public float MaxHue = 0f;
+    public float MaxSat = 0f;
+    public float MaxVal = 0f;
+
+    public float MinHue = 100f;
+    public float MinSat = 100f;
+    public float MinVal = 100f;
+
+    public float MeanHue = 0f;
+    public float MeanSat = 0f;
+    public float MeanVal = 0f;
 }
