@@ -122,8 +122,10 @@ namespace ImgStat
             {
 
                 CsvWriter csv = new CsvWriter(streamWriter);
-                //Loop through the tweet results & add them to a CSV document.
 
+                csv.NextRecord();
+                
+                //Loop through the tweet results & add them to a CSV document.
                 foreach (Tweetinvi.Models.ITweet t in tweets)
                 {
                     foreach (string id in skipID)
@@ -182,46 +184,12 @@ namespace ImgStat
 
                         using (WebClient webClient = new WebClient())
                         {
-                            csvReader.Read();
                             while (csvReader.Read())
                             {
                                 string id = "", mediaUri = "";
-                                for (int i = 0; i < csvReader.FieldsCount; i++)
-                                {
-                                    var fr = csvReader[i];
-
-                                    //Console.WriteLine(i);
-                                    //Console.WriteLine(fr);
-
-                                    switch (i)
-                                    {
-                                        case 0:
-                                            id = fr;
-                                            break;
-                                        case 1:
-                                            break;
-                                        case 2:
-                                            break;
-                                        case 3:
-                                            break;
-                                        case 4:
-
-                                            break;
-                                        case 5:
-                                            //Console.WriteLine(i);
-                                            //Console.WriteLine(fr + "\n");
-                                            mediaUri = fr;
-                                            break;
-                                        case 6:
-                                            break;
-                                        case 7:
-                                            break;
-                                        default:
-                                            break;
-                                    }
-
-
-                                }
+                                id = csvReader[0];
+                                mediaUri = csvReader[5];
+                                
                                 Console.Write($"downloading {id} from: {mediaUri} \n");
                                 UriBuilder uri = new UriBuilder(mediaUri);
 
