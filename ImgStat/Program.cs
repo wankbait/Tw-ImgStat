@@ -54,6 +54,12 @@ namespace ImgStat
                             var stat = imgParser.GetStat(FileMgr.DLPath + $"{csvReader[0]}.jpg");
                             //Mean Saturation
                             csv.WriteField(stat.MeanSat.ToString());
+                            csv.WriteField(stat.MeanVal.ToString());
+                            csv.WriteField(stat.MeanHue.ToString());
+
+                            csv.WriteField(stat.MaxSat.ToString());
+                            csv.WriteField(stat.MinSat.ToString());
+                            csv.WriteField(stat.MinVal.ToString());
                             //Write record to file
                             csv.NextRecord();
                             Console.Write($"\n Wrote record {csvReader[0]} to {FileMgr.OutFile}");
