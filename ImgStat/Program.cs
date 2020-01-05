@@ -24,13 +24,6 @@ namespace ImgStat
             var downloads = Directory.EnumerateFiles(FileMgr.DLPath);
             int count = 1;
             
-            //Parallel.ForEach(downloads, file =>
-            //{
-            //    Console.Write("\n" + count + ": ");
-            //    count++;
-            //    Console.WriteLine($"STAT:{file}\n");
-            //    imgParser.GetStat(file);
-            //});
             using (StreamWriter streamWriter = new StreamWriter(FileMgr.OutFile))
             {
                 Parallel.ForEach(Directory.EnumerateFiles(FileMgr.CSVPath), filePath =>
