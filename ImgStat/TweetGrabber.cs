@@ -85,7 +85,7 @@ namespace ImgStat
             {
                 CsvWriter csv = new CsvWriter(streamWriter);
 
-                var stream = Tweetinvi.Stream.CreateFilteredStream(credentials: twitterCredentials, tweetMode: TweetMode.Extended);
+                var stream = Tweetinvi.Stream.CreateFilteredStream(credentials: twitterCredentials);
 
                 stream.AddTrack("* #digitalart #portrait has:images -filter:replies");
                 //stream.AddTrack("github");
