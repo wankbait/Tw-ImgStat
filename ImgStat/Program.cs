@@ -34,6 +34,9 @@ namespace ImgStat
                         CsvWriter csv = new CsvWriter(streamWriter);
                         while (csvReader.Read())
                         {
+                            //Get statistics of the image based on tweet ID.
+                            var stat = imgParser.GetStat(FileMgr.DLPath + $"{csvReader[0]}.jpg");
+
                             csv.WriteField(csvReader[0]);
                             csv.WriteField(csvReader[1]);
                             csv.WriteField(csvReader[2]);
@@ -43,8 +46,8 @@ namespace ImgStat
                             csv.WriteField(csvReader[6]);
                             csv.WriteField(csvReader[7]);
                             csv.WriteField(csvReader[8]);
+                            csv.WriteField(csvReader[9]);
 
-                            var stat = imgParser.GetStat(FileMgr.DLPath + $"{csvReader[0]}.jpg");
                             //Mean Saturation
                             csv.WriteField(stat.MeanSat.ToString());
                             csv.WriteField(stat.MeanVal.ToString());
@@ -59,13 +62,14 @@ namespace ImgStat
                         }
                         count++;
 
-                        Console.WriteLine("Done.");
 
                     }
                 });
             }
-                
-            Console.WriteLine($"AVG TIME: {ImgParser.totalElapsedMS / count}ms");
+
+            Console.WriteLine("\n Done.");
+
+            //Console.WriteLine($"AVG TIME: {ImgParser.totalElapsedMS / count}ms");
             //while (true)
             //{
             //    Console.WriteLine("Press (1) to grab tweets, (2) to process tweets. Press anything else to exit.");
