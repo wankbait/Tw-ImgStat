@@ -86,13 +86,13 @@ namespace ImgStat
                 CsvWriter csv = new CsvWriter(streamWriter);
 
                 var stream = Tweetinvi.Stream.CreateFilteredStream(credentials: twitterCredentials);
-
-                stream.AddTrack("* #digitalart #portrait has:images -filter:replies");
+                stream.AddTrack("#digitalart");
+                //stream.AddTrack("#digitalart #portrait has:images -filter:replies");
                 //stream.AddTrack("github");
                 stream.MatchingTweetReceived += (sender, args) =>
                 {
                     Console.WriteLine(args.Tweet.Id);
-                    if (!args.Tweet.IsRetweet)
+                    if (!args.Tweet.IsRetweet && args.Tweet.Media.Count != 0 && !args.Tweet.FullText.Contains("#portrait"))
                     {
                         Tweet slim = new Tweet(args.Tweet);
 
@@ -113,6 +113,7 @@ namespace ImgStat
                         //provide some feedback in the console
                         Console.WriteLine($"Wrote tweet with ID: {slim.ID} to file {csvFile} \n");
                         count++;
+                        Console.WriteLine(count);
                     }
                 };
 
