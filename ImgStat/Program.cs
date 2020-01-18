@@ -17,7 +17,8 @@ namespace ImgStat
             TweetGrabber.Init();
             FileMgr.Init();
 
-            TweetGrabber.Fetch(10000);
+            //TweetGrabber.Fetch(11);
+            TweetGrabber.UpdateAll();
             TweetGrabber.Download();
 
             ImgParser imgParser = new ImgParser();

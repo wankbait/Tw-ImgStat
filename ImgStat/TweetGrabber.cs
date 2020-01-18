@@ -63,7 +63,91 @@ namespace ImgStat
             Auth.SetUserCredentials(cToken, cSecret, aToken, aSecret);
 
         }
-        
+
+        internal static void UpdateAll()
+        {
+            IEnumerable<string> files = Directory.EnumerateFiles(FileMgr.CSVPath);
+            Console.ForegroundColor = ConsoleColor.Cyan;
+            Console.WriteLine($"UPDATE: {Enumerable.Count(files)} DOCUMENTS");
+            Console.ResetColor();
+
+            string bulkCsvFile = FileMgr.CSVPath + $"{DateTime.Now.ToOADate()}_blktweet.csv";
+            if (!Directory.Exists(FileMgr.CSVPath))
+            {
+                Directory.CreateDirectory(FileMgr.CSVPath);
+            }
+            if (!File.Exists(bulkCsvFile))
+            {
+                File.WriteAllText(bulkCsvFile, "");
+            }
+
+
+            List<long> ids = new List<long>();
+            Parallel.ForEach(files, file => {
+                using (FileStream fileStream = new FileStream(file, FileMode.Open, FileAccess.ReadWrite, FileShare.ReadWrite))
+                using (StreamReader streamReader = new StreamReader(fileStream))
+                {
+                    Console.WriteLine($"Gathering IDs from File: {file}...");
+                    var csvReader = new CsvReader(streamReader, ",");
+                    while (csvReader.Read())
+                    {
+                        long record_id = long.Parse(csvReader[0]);
+                        if (!ids.Contains(record_id))
+                            ids.Add(record_id);
+                    }
+
+                }
+
+                //Get 'em out of here.
+                try
+                {
+                    File.Move(file, FileMgr.CSVBackup + file.Split("\\")[file.Split("\\").Length - 1]);
+                }catch(Exception e)
+                {
+                    
+                    File.Move(file, FileMgr.CSVBackup + (new Random().Next()) + file.Split("\\")[file.Split("\\").Length - 1]);
+                }
+                Console.WriteLine($"Moved old file {file} to \n{FileMgr.CSVBackup}");
+            });
+
+
+            Console.ResetColor();
+            using (StreamWriter streamWriter = new StreamWriter(bulkCsvFile))
+            {
+                Console.WriteLine("Fetching new data from Twitter...");
+                CsvWriter csv = new CsvWriter(streamWriter);
+                var newTweets = Tweetinvi.Tweet.GetTweets(ids.ToArray());
+                foreach (ITweet t in newTweets)
+                {
+                    if(t.Media[0].MediaType != "photo")
+                    {
+                        Console.WriteLine($"SKIPPING {t.Id}; Does not contain photo media.");
+                        continue;
+                    }
+
+                    Tweet slim = new Tweet(t);
+
+                    csv.WriteField(slim.ID.ToString());//0
+                    csv.WriteField(slim.Fav.ToString());//1
+                    csv.WriteField(slim.RT.ToString());//2
+                    csv.WriteField(slim.Replies.ToString());//3
+                    csv.WriteField(slim.Followers.ToString());//4
+                    csv.WriteField(slim.MediaUrl.ToString());//5
+                    csv.WriteField(slim.TweetUrl.ToString());//6
+                    csv.WriteField(slim.Content.ToString());//7
+                    csv.WriteField(slim.CreationTime.ToString());//8
+                    csv.WriteField(slim.LikeFollowRatio.ToString());//9
+
+                    //Write record to file
+                    csv.NextRecord();
+
+                    //provide some feedback in the console
+                    Console.WriteLine($"Updated ID: {slim.ID} to file {bulkCsvFile} \n");
+                }
+            }
+            
+        }
+
         public static void Fetch(int num)
         {
             //Console.Write($"Fetching {num} tweets... \n
