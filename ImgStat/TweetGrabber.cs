@@ -119,10 +119,25 @@ namespace ImgStat
                 var newTweets = Tweetinvi.Tweet.GetTweets(ids.ToArray());
                 foreach (ITweet t in newTweets)
                 {
-                    if(t.Media[0].MediaType != "photo")
+                    try
                     {
-                        Console.WriteLine($"SKIPPING {t.Id}; Does not contain photo media.");
+                        if(t.Media[0].MediaType != "photo")
+                        {
+                            Console.BackgroundColor = ConsoleColor.Red;
+                            Console.WriteLine($"SKIPPING {t.Id}; Does not contain photo media.");
+                            Console.ResetColor();
+
+                            continue;
+                        }
+
+                    }catch(Exception e)
+                    {
+                        Console.BackgroundColor = ConsoleColor.DarkRed;
+                        Console.WriteLine($"SKIPPING {t.Id}; Does not contain embedded media.");
+                        Console.ResetColor();
+
                         continue;
+
                     }
 
                     Tweet slim = new Tweet(t);
@@ -300,11 +315,15 @@ namespace ImgStat
         {
             Console.WriteLine("--downloading");
             string id = "", mediaUri = "";
+            int count = 1;
 
+            //Surround in try/catch block in case the download fails
             try
             {
+                //Loop through each file in the CSV folder
                 foreach (string filePath in Directory.EnumerateFiles(FileMgr.CSVPath))
                 {
+                    //Read each file, download the attached media using the saved URI and the tweet ID as a filename.
                     using (StreamReader streamReader = new StreamReader(filePath))
                     {
                         CsvReader csvReader = new CsvReader(streamReader);
@@ -316,14 +335,11 @@ namespace ImgStat
                                 id = csvReader[0];
                                 mediaUri = csvReader[5];
                                 
-                                Console.Write($"downloading {id} from: {mediaUri} \n");
+                                Console.Write($"{count}: Downloading {id} from: {mediaUri} \n");
                                 UriBuilder uri = new UriBuilder(mediaUri);
 
                                 webClient.DownloadFile(uri.Uri, $"{FileMgr.DLPath}{id}.jpg");
-                                webClient.DownloadProgressChanged += (object sender, DownloadProgressChangedEventArgs e) =>
-                                {
-                                    Console.Write($"\r Downloading {id} : {e.ProgressPercentage}");
-                                };
+                                
                             }
                             Console.WriteLine("Done.");
                         }
