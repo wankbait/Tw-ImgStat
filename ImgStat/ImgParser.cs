@@ -79,7 +79,7 @@ namespace ImgStat
     }
     class ImgParser
     {
-        public static long totalElapsedMS = 0l;
+        public static long totalElapsedMS = 0L;
 
         public ImgParser()
         {
