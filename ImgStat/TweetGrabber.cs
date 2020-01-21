@@ -165,7 +165,6 @@ namespace ImgStat
 
         public static void Fetch(int num)
         {
-            //Console.Write($"Fetching {num} tweets... \n
 
             string csvFile = FileMgr.CSVPath + $"{DateTime.Now.ToOADate()}_tweet.csv";
             if (!Directory.Exists(FileMgr.CSVPath))
@@ -230,78 +229,6 @@ namespace ImgStat
                     stream.StopStream();
                 }
             }
-                
-
-
-            //List<string> skipID = new List<string>();
-            //Console.BackgroundColor = ConsoleColor.DarkMagenta;
-            //foreach (string file in Directory.EnumerateFiles(FileMgr.CSVPath))
-            //{
-            //    using (FileStream fileStream = new FileStream(file,FileMode.Open, FileAccess.ReadWrite, FileShare.ReadWrite))
-            //    using (StreamReader streamReader = new StreamReader(fileStream))
-            //    {
-            //        Console.WriteLine($"Gathering old IDs from {file}...");
-            //        var csvReader = new CsvReader(streamReader, ",");
-            //        while (csvReader.Read())
-            //        {
-            //            skipID.Add(csvReader[0]);
-            //        }
-                    
-            //    }
-            //}
-            //Console.ResetColor();
-
-            //create a "slim" tweet object with only a select few fields
-            //using the ITweet object returned from tweetinvi results in a stack overflow error.
-            //using (FileStream fileStream = new FileStream(csvFile,FileMode.Open, FileAccess.ReadWrite, FileShare.ReadWrite))
-            //using (StreamWriter streamWriter = new StreamWriter(fileStream))
-            //{
-
-            //    CsvWriter csv = new CsvWriter(streamWriter);
-
-            //    csv.NextRecord();
-                
-            //    //Loop through the tweet results & add them to a CSV document.
-            //    foreach (Tweetinvi.Models.ITweet t in tweets)
-            //    {
-            //        foreach (string id in skipID)
-            //        {
-            //            if (id == t.IdStr)
-            //            {
-            //                Console.ForegroundColor = ConsoleColor.DarkMagenta;
-            //                Console.WriteLine($"SKIPPING TWEET WITH ID: {id}");
-            //                Console.ResetColor();
-            //                goto Skip;
-            //            }
-            //        }
-
-            //        Tweet slim = new Tweet(t);
-
-            //        csv.WriteField(slim.ID.ToString());//0
-            //        csv.WriteField(slim.Fav.ToString());//1
-            //        csv.WriteField(slim.RT.ToString());//2
-            //        csv.WriteField(slim.Replies.ToString());//3
-            //        csv.WriteField(slim.Followers.ToString());//4
-            //        csv.WriteField(slim.MediaUrl.ToString());//5
-            //        csv.WriteField(slim.TweetUrl.ToString());//6
-            //        csv.WriteField(slim.Content.ToString());//7
-            //        csv.WriteField(slim.CreationTime.ToString());//8
-
-            //        //Write record to file
-            //        csv.NextRecord();
-
-            //        //provide some feedback in the console
-            //        Console.WriteLine($"Wrote tweet with ID: {slim.ID} to file {csvFile} \n");
-            //        continue;
-            //        Skip: {
-            //            continue;
-            //        }
-            //    }
-            //}
-
-            //Using the "using" command disposes of and flushes both the StreamWriter and CsvWriter at the end; no need to do that manually
-
-
 
         }
 
@@ -352,8 +279,7 @@ namespace ImgStat
                 Console.WriteLine(e.ToString());
                 Console.WriteLine($"ID:{id}");
                 Console.WriteLine($"URI:{mediaUri}");
-                //Fetch(num);
-                //Download(num);
+                
                 Thread.Sleep(5000);
                 return;
             }
