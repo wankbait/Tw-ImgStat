@@ -212,6 +212,12 @@ namespace ImgStat
                         Console.WriteLine($"Wrote tweet with ID: {slim.ID} to file {csvFile} \n");
                         count++;
                         Console.WriteLine(count);
+
+                        if(count >= num)
+                        {
+                            stream.StopStream();
+                            Console.WriteLine($"Reached tweet count limit of {num} tweets.");
+                        }
                     }
                 };
 
