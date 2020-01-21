@@ -38,6 +38,7 @@ namespace ImgStat
                             //Get statistics of the image based on tweet ID.
                             var stat = imgParser.GetStat(FileMgr.DLPath + $"{csvReader[0]}.jpg");
 
+                            //Copy over existing data.
                             csv.WriteField(csvReader[0]);
                             csv.WriteField(csvReader[1]);
                             csv.WriteField(csvReader[2]);
@@ -49,14 +50,21 @@ namespace ImgStat
                             csv.WriteField(csvReader[8]);
                             csv.WriteField(csvReader[9]);
 
-                            //Mean Saturation
+                            //Write averages (saturation, value, hue)
                             csv.WriteField(stat.MeanSat.ToString());
                             csv.WriteField(stat.MeanVal.ToString());
                             csv.WriteField(stat.MeanHue.ToString());
 
+                            //Write maximums
                             csv.WriteField(stat.MaxSat.ToString());
+                            csv.WriteField(stat.MaxVal.ToString());
+                            csv.WriteField(stat.MaxHue.ToString());
+                            
+                            //Minimums
                             csv.WriteField(stat.MinSat.ToString());
                             csv.WriteField(stat.MinVal.ToString());
+                            csv.WriteField(stat.MinHue.ToString());
+
                             //Write record to file
                             csv.NextRecord();
                             Console.Write($"\n Wrote record {csvReader[0]} to {FileMgr.OutFile}");
