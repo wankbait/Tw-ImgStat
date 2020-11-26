@@ -8,6 +8,7 @@ namespace ImgStat
     public static class FileMgr
     {
         public static string DLPath = $@"{Environment.CurrentDirectory}\Download\";
+        public static string CSVBackup = $@"{Environment.CurrentDirectory}\tw.old\";
         public static string CSVPath = $@"{Environment.CurrentDirectory}\Tweets\";
         public static string AuthFile = $"{Environment.CurrentDirectory}\\Auth.txt";
         public static string OutFile = $@"{Environment.CurrentDirectory}\Output.csv";
@@ -17,6 +18,11 @@ namespace ImgStat
             if (!Directory.Exists(DLPath))
             {
                 Directory.CreateDirectory(DLPath);
+            }
+            
+            if (!Directory.Exists(CSVBackup))
+            {
+                Directory.CreateDirectory(CSVBackup);
             }
         }
     }

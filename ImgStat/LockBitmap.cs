@@ -48,6 +48,15 @@ namespace ImgStat
 
                 // get source bitmap pixel format size
                 Depth = System.Drawing.Bitmap.GetPixelFormatSize(source.PixelFormat);
+                if (Depth != 8 && Depth != 24 && Depth != 32)
+                {
+                    //Line pulled & modified from StackOverflow: https://stackoverflow.com/a/2016509
+                    Bitmap clone = new Bitmap(source.Width, source.Height, System.Drawing.Imaging.PixelFormat.Format32bppPArgb);
+
+                    source = clone;
+                    Depth = System.Drawing.Bitmap.GetPixelFormatSize(source.PixelFormat);
+                }
+                
 
                 // Check if bpp (Bits Per Pixel) is 8, 24, or 32
                 if (Depth != 8 && Depth != 24 && Depth != 32)

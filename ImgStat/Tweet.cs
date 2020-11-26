@@ -17,6 +17,8 @@ public class Tweet
     public string TweetUrl { get; } //Should this be removed to preserve anonymity? Or will it not matter because it will not be included in the paper?
     public float LikeFollowRatio { get; }
 
+    public int AgeDays { get; }
+    public int AgeHours { get; }
     public Tweet(Tweetinvi.Models.ITweet tweet)
     {
         this.ID = tweet.Id.ToString();
@@ -63,7 +65,7 @@ public class Tweet
         //Use this to take into account user popularity
         if (Fav != 0)
         {
-            this.LikeFollowRatio = Followers / Fav;
+            this.LikeFollowRatio = (float)Followers / (float)Fav;
 
         }
         else
@@ -71,6 +73,10 @@ public class Tweet
 
             this.LikeFollowRatio = -1;
         }
+
+        this.AgeHours = DateTime.Today.Date.Subtract(tweet.CreatedAt.Date).Hours;
+        this.AgeDays = DateTime.Today.Date.Subtract(tweet.CreatedAt.Date).Days;
+
 
     }
 
