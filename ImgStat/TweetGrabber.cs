@@ -94,6 +94,8 @@ namespace ImgStat
                         long record_id = long.Parse(csvReader[0]);
                         if (!ids.Contains(record_id))
                             ids.Add(record_id);
+
+                        
                     }
 
                 }
@@ -142,16 +144,19 @@ namespace ImgStat
 
                     Tweet slim = new Tweet(t);
 
-                    csv.WriteField(slim.ID.ToString());//0
-                    csv.WriteField(slim.Fav.ToString());//1
-                    csv.WriteField(slim.RT.ToString());//2
-                    csv.WriteField(slim.Replies.ToString());//3
-                    csv.WriteField(slim.Followers.ToString());//4
-                    csv.WriteField(slim.MediaUrl.ToString());//5
-                    csv.WriteField(slim.TweetUrl.ToString());//6
-                    csv.WriteField(slim.Content.ToString());//7
-                    csv.WriteField(slim.CreationTime.ToString());//8
-                    csv.WriteField(slim.LikeFollowRatio.ToString());//9
+                    csv.WriteField(slim.ID.ToString());//0                  A
+                    csv.WriteField(slim.Fav.ToString());//1                 B
+                    csv.WriteField(slim.RT.ToString());//2                  C
+                    csv.WriteField(slim.Replies.ToString());//3             D
+                    csv.WriteField(slim.Followers.ToString());//4           E
+                    csv.WriteField(slim.MediaUrl.ToString());//5            F
+                    csv.WriteField(slim.TweetUrl.ToString());//6            G
+                    csv.WriteField(slim.Content.ToString());//7             H
+                    csv.WriteField(slim.CreationTime.ToString());//8        I
+                    csv.WriteField(slim.CreationTime.Ticks.ToString());//9  J
+                    csv.WriteField(slim.LikeFollowRatio.ToString());//10    K
+                    csv.WriteField(slim.AgeHours.ToString());//11           L
+                    csv.WriteField(slim.AgeDays.ToString());//12            M
 
                     //Write record to file
                     csv.NextRecord();
@@ -203,7 +208,10 @@ namespace ImgStat
                         csv.WriteField(slim.TweetUrl.ToString());//6
                         csv.WriteField(slim.Content.ToString());//7
                         csv.WriteField(slim.CreationTime.ToString());//8
-                        csv.WriteField(slim.LikeFollowRatio.ToString());//9
+                        csv.WriteField(slim.CreationTime.Ticks.ToString());//9
+                        csv.WriteField(slim.LikeFollowRatio.ToString());//10
+                        csv.WriteField(slim.AgeHours.ToString());//11
+                        csv.WriteField(slim.AgeDays.ToString());//12
 
                         //Write record to file
                         csv.NextRecord();
@@ -272,6 +280,7 @@ namespace ImgStat
                                 UriBuilder uri = new UriBuilder(mediaUri);
 
                                 webClient.DownloadFile(uri.Uri, $"{FileMgr.DLPath}{id}.jpg");
+                                count++;
                                 
                             }
                             Console.WriteLine("Done.");
