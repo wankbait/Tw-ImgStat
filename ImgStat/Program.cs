@@ -39,31 +39,38 @@ namespace ImgStat
                             var stat = imgParser.GetStat(FileMgr.DLPath + $"{csvReader[0]}.jpg");
 
                             //Copy over existing data.
-                            csv.WriteField(csvReader[0]);
-                            csv.WriteField(csvReader[1]);
-                            csv.WriteField(csvReader[2]);
-                            csv.WriteField(csvReader[3]);
-                            csv.WriteField(csvReader[4]);
-                            csv.WriteField(csvReader[5]);
-                            csv.WriteField(csvReader[6]);
-                            csv.WriteField(csvReader[7]);
-                            csv.WriteField(csvReader[8]);
-                            csv.WriteField(csvReader[9]);
+                            for(int i = 0; i < csvReader.FieldsCount; i++)
+                            {
+                                csv.WriteField(csvReader[i]);
+                            }
+                            //csv.WriteField(csvReader[0]);
+                            //csv.WriteField(csvReader[1]);
+                            //csv.WriteField(csvReader[2]);
+                            //csv.WriteField(csvReader[3]);
+                            //csv.WriteField(csvReader[4]);
+                            //csv.WriteField(csvReader[5]);
+                            //csv.WriteField(csvReader[6]);
+                            //csv.WriteField(csvReader[7]);
+                            //csv.WriteField(csvReader[8]);
+                            //csv.WriteField(csvReader[9]);
+                            //csv.WriteField(csvReader[10]);
+                            //csv.WriteField(csvReader[11]);
+                            //csv.WriteField(csvReader[12]);
 
                             //Write averages (saturation, value, hue)
-                            csv.WriteField(stat.MeanSat.ToString());
-                            csv.WriteField(stat.MeanVal.ToString());
-                            csv.WriteField(stat.MeanHue.ToString());
+                            csv.WriteField(stat.MeanSat.ToString());    //N
+                            csv.WriteField(stat.MeanVal.ToString());    //O
+                            csv.WriteField(stat.MeanHue.ToString());    //P
 
                             //Write maximums
-                            csv.WriteField(stat.MaxSat.ToString());
-                            csv.WriteField(stat.MaxVal.ToString());
-                            csv.WriteField(stat.MaxHue.ToString());
+                            csv.WriteField(stat.MaxSat.ToString());     //Q
+                            csv.WriteField(stat.MaxVal.ToString());     //R
+                            csv.WriteField(stat.MaxHue.ToString());     //S
                             
                             //Minimums
-                            csv.WriteField(stat.MinSat.ToString());
-                            csv.WriteField(stat.MinVal.ToString());
-                            csv.WriteField(stat.MinHue.ToString());
+                            csv.WriteField(stat.MinSat.ToString());     //T
+                            csv.WriteField(stat.MinVal.ToString());     //U
+                            csv.WriteField(stat.MinHue.ToString());     //V
 
                             //Write record to file
                             csv.NextRecord();
